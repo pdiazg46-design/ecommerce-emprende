@@ -215,6 +215,8 @@ export function BrandConfig() {
                           if(!shippingCoverage.includes(val)) {
                             setShippingCoverage(prev => [...prev.filter(c => c !== 'Todo Chile'), val])
                           }
+                          setSelectedRegionUi('')
+                          setSelectedComunaUi('')
                        }}
                        className="w-full mt-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 py-2 rounded-lg transition"
                      >
@@ -244,6 +246,8 @@ export function BrandConfig() {
                           if(!shippingCoverage.includes(selectedComunaUi)) {
                             setShippingCoverage(prev => [...prev.filter(c => c !== 'Todo Chile'), selectedComunaUi])
                           }
+                          setSelectedRegionUi('')
+                          setSelectedComunaUi('')
                        }}
                        className="w-full mt-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 disabled:opacity-50 py-2 rounded-lg transition"
                      >
