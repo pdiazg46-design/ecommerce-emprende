@@ -1,0 +1,544 @@
+﻿node.exe : Vercel CLI 
+50.7.1
+En línea: 1 Carácter: 
+1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (Vercel CLI   
+  50.7.1:String) [    
+], RemoteExceptio    n
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+Retrieving projectÔÇª
+> Downloading 
+`production` 
+Environment Variables 
+for patricios-projects
+-c196c515/ecommerce-em
+prende
+Downloading
+Created .vercel\.env.p
+roduction.local file  
+[256ms]
+
+> Downloading project 
+settings
+Downloaded project 
+settings to ~\Desarrol
+los\E-commerce\ecommer
+ce-emprende\.vercel\pr
+oject.json [1ms]
+WARN! Build not 
+running on Vercel. 
+System environment 
+variables will not be 
+available.
+WARNING: You should 
+not upload the 
+`.next` directory.
+Installing dependencies...
+
+> ecommerce-emprende@0.1.0 postinstall
+> prisma generate
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Ô£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 173ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+ÔöîÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+É
+Ôöé  Update available 
+5.22.0 -> 7.4.2       
+                Ôöé
+Ôöé                   
+                      
+                Ôöé
+Ôöé  This is a major 
+update - please 
+follow the guide at   
+ Ôöé
+Ôöé  https://pris.ly/d
+/major-version-upgrade
+                Ôöé
+Ôöé                   
+                      
+                Ôöé
+Ôöé  Run the 
+following to update   
+                      
+   Ôöé
+Ôöé    npm i 
+--save-dev 
+prisma@latest         
+              Ôöé
+Ôöé    npm i 
+@prisma/client@latest 
+                      
+   Ôöé
+ÔööÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÿ
+
+removed 2 packages in 3s
+
+143 packages are looking for funding
+  run `npm fund` for details
+Detected Next.js version: 16.1.6
+Running "npm run build"
+
+> ecommerce-emprende@0.1.0 build
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+ÔÜá The "middleware" 
+file convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://ne
+xtjs.org/docs/messages
+/middleware-to-proxy
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack 
+build failed with 4 
+errors:
+./src/app/api/admin/ca
+talogo/route.ts:4:1
+Module not found: 
+Can't resolve 
+'@supabase/ssr'
+[0m [90m 2 |[39m 
+[36mimport[39m { [3
+3mNextResponse[39m } 
+[36mfrom[39m [32m'n
+ext/server'[39m
+ [90m 3 |[39m 
+[36mimport[39m { 
+prisma } 
+[36mfrom[39m [32m'@
+/lib/prisma'[39m
+[31m[1m>[22m[39m[
+90m 4 |[39m 
+[36mimport[39m { 
+createServerClient } 
+[36mfrom[39m [32m'@
+supabase/ssr'[39m
+ [90m   |[39m [31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m
+ [90m 5 |[39m 
+[36mimport[39m { 
+cookies } 
+[36mfrom[39m [32m'n
+ext/headers'[39m
+ [90m 6 |[39m
+ [90m 7 |[39m 
+[36mexport[39m 
+[36masync[39m 
+[36mfunction[39m 
+[33mGET[39m() {[0m
+
+
+
+https://nextjs.org/doc
+s/messages/module-not-
+found
+
+
+./src/lib/supabase-cli
+ent.ts:1:1
+Module not found: 
+Can't resolve 
+'@supabase/ssr'
+[0m[31m[1m>[22m[3
+9m[90m 1 |[39m 
+[36mimport[39m { 
+createBrowserClient } 
+[36mfrom[39m [32m'@
+supabase/ssr'[39m
+ [90m   |[39m [31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m
+ [90m 2 |[39m
+ [90m 3 |[39m 
+[36mexport[39m 
+[36mfunction[39m 
+createClient() {
+ [90m 4 |[39m   
+[36mreturn[39m creat
+eBrowserClient([0m
+
+
+
+Import traces:
+  Client Component 
+Browser:
+    ./src/lib/supabase
+-client.ts [Client 
+Component Browser]
+    ./src/app/login/pa
+ge.tsx [Client 
+Component Browser]
+    ./src/app/login/pa
+ge.tsx [Server 
+Component]
+
+  Client Component 
+SSR:
+    ./src/lib/supabase
+-client.ts [Client 
+Component SSR]
+    ./src/app/login/pa
+ge.tsx [Client 
+Component SSR]
+    ./src/app/login/pa
+ge.tsx [Server 
+Component]
+
+https://nextjs.org/doc
+s/messages/module-not-
+found
+
+
+./src/lib/supabase-ser
+ver.ts:1:1
+Module not found: 
+Can't resolve 
+'@supabase/ssr'
+[0m[31m[1m>[22m[3
+9m[90m 1 |[39m 
+[36mimport[39m { cre
+ateServerClient[33m,
+[39m type [33mCookieO
+ptions[39m } 
+[36mfrom[39m [32m'@
+supabase/ssr'[39m
+ [90m   |[39m [31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m
+ [90m 2 |[39m 
+[36mimport[39m { 
+cookies } 
+[36mfrom[39m [32m'n
+ext/headers'[39m
+ [90m 3 |[39m
+ [90m 4 |[39m 
+[36mexport[39m 
+[36masync[39m 
+[36mfunction[39m 
+createClient() {[0m
+
+
+
+Import trace:
+  App Route:
+    ./src/lib/supabase
+-server.ts
+    ./src/app/api/ecom
+merce-settings/route.t
+s
+
+https://nextjs.org/doc
+s/messages/module-not-
+found
+
+
+./src/middleware.ts:1:
+1
+Module not found: 
+Can't resolve 
+'@supabase/ssr'
+[0m[31m[1m>[22m[3
+9m[90m 1 |[39m 
+[36mimport[39m { 
+createServerClient } 
+[36mfrom[39m [32m'@
+supabase/ssr'[39m
+ [90m   |[39m [31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m
+ [90m 2 |[39m 
+[36mimport[39m { [3
+3mNextResponse[39m[3
+3m,[39m type 
+[33mNextRequest[39m 
+} [36mfrom[39m [32m
+'next/server'[39m
+ [90m 3 |[39m
+ [90m 4 |[39m 
+[36mexport[39m 
+[36masync[39m 
+[36mfunction[39m mid
+dleware(request[33m:
+[39m [33mNextRequest
+[39m) {[0m
+
+
+
+https://nextjs.org/doc
+s/messages/module-not-
+found
+
+
+    at <unknown> (./sr
+c/app/api/admin/catalo
+go/route.ts:4:1)
+    at <unknown> (http
+s://nextjs.org/docs/me
+ssages/module-not-foun
+d)
+    at <unknown> (./sr
+c/lib/supabase-client.
+ts:1:1)
+    at <unknown> (http
+s://nextjs.org/docs/me
+ssages/module-not-foun
+d)
+    at <unknown> (./sr
+c/lib/supabase-server.
+ts:1:1)
+    at <unknown> (http
+s://nextjs.org/docs/me
+ssages/module-not-foun
+d)
+    at <unknown> (./sr
+c/middleware.ts:1:1)
+    at <unknown> (http
+s://nextjs.org/docs/me
+ssages/module-not-foun
+d)
+Error: Command "npm 
+run build" exited 
+with 1

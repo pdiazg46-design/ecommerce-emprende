@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { REGIONES_CHILE } from '@/lib/chile-data'
 
 export function BrandConfig() {
   const [storeName, setStoreName] = useState('EMPRENDE')
@@ -10,6 +11,11 @@ export function BrandConfig() {
   const [storeSlug, setStoreSlug] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
   const [shippingCoverage, setShippingCoverage] = useState<string[]>([])
+  
+  // Selectores secundarios de UI para armar zonas
+  const [selectedRegionUi, setSelectedRegionUi] = useState('')
+  const [selectedComunaUi, setSelectedComunaUi] = useState('')
+  
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -144,75 +150,131 @@ export function BrandConfig() {
                 placeholder="mi-tienda-online"
               />
             </div>
-            <p className="text-xs text-slate-600 font-medium mt-1.5">Usa solo minúsculas, números o guiones. Este será el link que compartirás a tus clientes.</p>
+            {storeSlug && (
+               <div className="mt-3">
+                 <a href={`/${storeSlug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm">
+                   👀 Ver mi Tienda Pública
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                   </svg>
+                 </a>
+               </div>
+            )}
           </div>
         </div>
         
-        {/* Cobertura de Despachos */}
-        <div className="md:col-span-2 bg-blue-50/50 border border-blue-100 p-5 rounded-2xl mb-2 mt-4">
-          <label className="block text-base font-bold text-slate-900 mb-2">Cobertura de Despachos</label>
-          <p className="text-sm text-slate-600 mb-4 font-medium">Selecciona dónde realizas envíos. Esta información se destacará a tus clientes en el Carro de Compras.</p>
+        <div className="md:col-span-2 bg-slate-50/80 border border-slate-200 p-6 rounded-2xl mb-2 mt-4 space-y-6">
+          <div>
+            <label className="block text-lg font-bold text-slate-900">Cobertura de Despachos Geográfica</label>
+            <p className="text-sm text-slate-600 mt-1 font-medium leading-relaxed">Configura exactamente hasta dónde entregas productos. Tus clientes del Carrito no podrán finalizar compras si están fuera de tu jurisdicción.</p>
+          </div>
           
-          <div className="flex flex-col sm:flex-row gap-4">
-            <label className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition-colors">
+          <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+            <label className="flex items-center space-x-3 cursor-pointer group">
               <input 
                 type="checkbox" 
                 checked={shippingCoverage.includes('Todo Chile')}
                 onChange={(e) => {
                   if (e.target.checked) {
-                     setShippingCoverage(prev => [...prev.filter(c => c !== 'Todo Chile'), 'Todo Chile'])
+                     setShippingCoverage(['Todo Chile']) // Resetea y pone Todo Chile
                   } else {
-                     setShippingCoverage(prev => prev.filter(c => c !== 'Todo Chile'))
+                     setShippingCoverage([])
                   }
                 }}
                 className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500" 
               />
-              <span className="text-sm font-semibold text-slate-800">Todo Chile</span>
+              <span className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition">🚛 Despacho a Todo Chile Continental</span>
             </label>
-
-            <label className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition-colors">
-              <input 
-                type="checkbox" 
-                checked={shippingCoverage.includes('Región Metropolitana')}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                     setShippingCoverage(prev => [...prev.filter(c => c !== 'Región Metropolitana'), 'Región Metropolitana'])
-                  } else {
-                     setShippingCoverage(prev => prev.filter(c => c !== 'Región Metropolitana'))
-                  }
-                }}
-                className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500" 
-              />
-              <span className="text-sm font-semibold text-slate-800">Solo Región Metropolitana</span>
-            </label>
-            
-            <label className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition-colors">
-              <input 
-                type="checkbox" 
-                checked={shippingCoverage.includes('Otras Comunas Específicas')}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                     setShippingCoverage(prev => [...prev.filter(c => c !== 'Otras Comunas Específicas'), 'Otras Comunas Específicas'])
-                  } else {
-                     setShippingCoverage(prev => prev.filter(c => c !== 'Otras Comunas Específicas'))
-                  }
-                }}
-                className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" 
-              />
-              <span className="text-sm font-semibold text-slate-800 flex items-center gap-1">
-                 Limitar a Comunas 
-                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                 </svg>
-              </span>
-            </label>
+            <p className="text-xs text-slate-500 ml-8 mt-1">Marca esta opción si utilizas couriers nacionales sin restricciones (Starken, Chilexpress).</p>
           </div>
-          
-          {shippingCoverage.includes('Otras Comunas Específicas') && (
-            <div className="mt-3 bg-white p-3 rounded-xl border border-emerald-200">
-              <p className="text-xs text-emerald-700 font-medium leading-relaxed">
-                 Las opciones limitadas permiten especificar tus zonas operativas. Informaremos a tus clientes que despachas a "Comunas Específicas" en la cabecera del carro.
-              </p>
+
+          {!shippingCoverage.includes('Todo Chile') && (
+            <div className="bg-white p-5 rounded-xl border border-slate-200 space-y-4 shadow-sm animate-fade-in">
+               <h4 className="text-sm font-bold text-slate-800">Constructor de Zonas Restringidas</h4>
+               
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Selector de Región */}
+                  <div className="space-y-2">
+                     <label className="text-xs font-semibold text-slate-500">Región</label>
+                     <select 
+                       value={selectedRegionUi}
+                       onChange={e => setSelectedRegionUi(e.target.value)}
+                       className="w-full text-sm p-2.5 rounded-lg border border-slate-300 bg-slate-50 focus:border-blue-500 outline-none"
+                     >
+                        <option value="">-- Selecciona Región --</option>
+                        {REGIONES_CHILE.map(r => (
+                           <option key={r.region} value={r.region}>{r.region}</option>
+                        ))}
+                     </select>
+                     
+                     <button 
+                       type="button"
+                       disabled={!selectedRegionUi}
+                       onClick={() => {
+                          const val = `Región ${selectedRegionUi}`
+                          if(!shippingCoverage.includes(val)) {
+                            setShippingCoverage(prev => [...prev.filter(c => c !== 'Todo Chile'), val])
+                          }
+                       }}
+                       className="w-full mt-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 py-2 rounded-lg transition"
+                     >
+                       + Añadir Región Completa
+                     </button>
+                  </div>
+
+                  {/* Selector de Comuna */}
+                  <div className="space-y-2 relative">
+                     <label className="text-xs font-semibold text-slate-500">Comuna Específica</label>
+                     <select 
+                       value={selectedComunaUi}
+                       onChange={e => setSelectedComunaUi(e.target.value)}
+                       disabled={!selectedRegionUi}
+                       className="w-full text-sm p-2.5 rounded-lg border border-slate-300 bg-slate-50 focus:border-blue-500 outline-none disabled:opacity-50"
+                     >
+                        <option value="">-- Selecciona Comuna --</option>
+                        {selectedRegionUi && REGIONES_CHILE.find(r => r.region === selectedRegionUi)?.comunas.map(c => (
+                           <option key={c} value={c}>{c}</option>
+                        ))}
+                     </select>
+                     
+                     <button 
+                       type="button"
+                       disabled={!selectedComunaUi}
+                       onClick={() => {
+                          if(!shippingCoverage.includes(selectedComunaUi)) {
+                            setShippingCoverage(prev => [...prev.filter(c => c !== 'Todo Chile'), selectedComunaUi])
+                          }
+                       }}
+                       className="w-full mt-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 disabled:opacity-50 py-2 rounded-lg transition"
+                     >
+                       + Añadir Comuna Única
+                     </button>
+                  </div>
+               </div>
+
+            </div>
+          )}
+
+          {/* Listado de Píldoras Activas */}
+          {shippingCoverage.length > 0 && !shippingCoverage.includes('Todo Chile') && (
+            <div className="mt-4 p-4 border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/30">
+               <span className="block text-xs font-bold text-blue-800 mb-3">Tus Zonas de Despacho Actuales:</span>
+               <div className="flex flex-wrap gap-2">
+                 {shippingCoverage.map(zone => (
+                    <span key={zone} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-white border border-blue-300 text-blue-900 shadow-sm">
+                       {zone}
+                       <button 
+                         type="button" 
+                         onClick={() => setShippingCoverage(prev => prev.filter(z => z !== zone))}
+                         className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-0.5 transition"
+                       >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                          </svg>
+                       </button>
+                    </span>
+                 ))}
+               </div>
             </div>
           )}
         </div>

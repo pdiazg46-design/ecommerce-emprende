@@ -4,6 +4,7 @@ import { useCartStore } from '@/lib/cart-store'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { REGIONES_CHILE } from '@/lib/chile-data'
 
 export default function CartPage() {
   const cart = useCartStore()
@@ -20,13 +21,25 @@ export default function CartPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shippingCoverage, setShippingCoverage] = useState<string[]>([])
   
-  // Basic Form State (En un caso real se usaría React Hook Form)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    region: '',
+    comuna: '',
     address: ''
   })
+
+  const isCoverageValid = () => {
+    if (shippingCoverage.length === 0 || shippingCoverage.includes('Todo Chile')) return true;
+    if (shippingCoverage.includes(`Región ${formData.region}`)) return true;
+    if (shippingCoverage.includes(formData.comuna)) return true;
+    return false;
+  }
+
+  const hasCoverage = isCoverageValid();
+  const showAddress = formData.region && formData.comuna && hasCoverage;
+  const showError = formData.region && formData.comuna && !hasCoverage;
 
   // Para simular la espera de hidratación o carrito real vacío
   const [mounted, setMounted] = useState(false)
@@ -187,11 +200,51 @@ export default function CartPage() {
                     type="tel" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="+56 9 1234 5678" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Dirección de Despacho (Solo Región X)</label>
-                  <input required
-                    value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}
-                    type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="Av. Principal 123, Depto 4B" />
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Región de Destino</label>
+                  <select required
+                    value={formData.region} 
+                    onChange={e => setFormData({...formData, region: e.target.value, comuna: ''})}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                  >
+                     <option value="">Selecciona tu Región</option>
+                     {REGIONES_CHILE.map(r => (
+                        <option key={r.region} value={r.region}>{r.region}</option>
+                     ))}
+                  </select>
                 </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Comuna de Destino</label>
+                  <select required
+                    value={formData.comuna} 
+                    disabled={!formData.region}
+                    onChange={e => setFormData({...formData, comuna: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition disabled:opacity-50"
+                  >
+                     <option value="">Selecciona tu Comuna</option>
+                     {formData.region && REGIONES_CHILE.find(r => r.region === formData.region)?.comunas.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                     ))}
+                  </select>
+                </div>
+
+                {showError && (
+                   <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm font-medium flex items-start gap-3 animate-fade-in shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 shrink-0 mt-0.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                      Lo sentimos, la tienda no registra cobertura de despacho habilitada para la comuna de {formData.comuna}. Contacta al vendedor para más información o selecciona otra comuna.
+                   </div>
+                )}
+
+                {showAddress && (
+                  <div className="animate-fade-in">
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Dirección Exacta de Despacho</label>
+                    <input required
+                      value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}
+                      type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="Av. Principal 123, Depto 4B" />
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-slate-100 pt-6 space-y-3 mb-6">
@@ -211,9 +264,9 @@ export default function CartPage() {
 
               <button 
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || showError || !showAddress}
                 className={`w-full bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition pwa-safe-bottom
-                  ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'hover:bg-emerald-700 active:scale-[0.98]'}
+                  ${(isSubmitting || showError || !showAddress) ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:bg-emerald-700 active:scale-[0.98]'}
                 `}
               >
                 {isSubmitting ? (
