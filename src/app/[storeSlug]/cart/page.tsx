@@ -160,68 +160,64 @@ export default function CartPage() {
         </div>
 
         {/* Lado Derecho: Checkout y Pago */}
-        <div className="w-full lg:w-[400px]">
+        <div className="w-full lg:w-[500px] xl:w-[550px]">
            <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 sticky top-24">
-              <h2 className="text-xl font-bold text-slate-900 mb-6">Datos de Envío</h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-4">Datos de Envío</h2>
               
               {shippingCoverage.length > 0 && (
-                <div className="mb-6 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-xl">
-                   <div className="flex items-start gap-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-blue-700 mt-0.5 shrink-0">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-                      </svg>
-                      <div>
-                        <h3 className="font-bold text-blue-900 text-sm">Zonas de Reparto Habilitadas</h3>
-                        <p className="text-xs text-blue-800 mt-1.5 leading-snug">
-                           Esta tienda realiza envíos exclusivamente a: <strong className="font-black text-blue-950">{shippingCoverage.join(' | ')}</strong>. Ingresa una dirección válida dentro de esta cobertura.
-                        </p>
-                      </div>
+                <div className="mb-4 bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-start gap-3">
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-blue-700 shrink-0">
+                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                   </svg>
+                   <div>
+                     <p className="text-[11px] text-blue-800 leading-snug">
+                        Solo envíos a: <strong className="font-bold text-blue-950">{shippingCoverage.join(' | ')}</strong>
+                     </p>
                    </div>
                 </div>
               )}
 
-              <div className="space-y-4 mb-8">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-500 mb-1">Nombre Completo</label>
                   <input required
                     value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                    type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="Patricio Díaz" />
+                    type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="Patricio Díaz" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">Email</label>
                   <input required
                     value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
-                    type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="correo@ejemplo.com" />
+                    type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="correo@ejemplo.com" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">Teléfono Whatsapp</label>
                   <input required
                     value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})}
-                    type="tel" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="+56 9 1234 5678" />
+                    type="tel" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="+56 9 1234 5678" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Región de Destino</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Región</label>
                   <select required
                     value={formData.region} 
                     onChange={e => setFormData({...formData, region: e.target.value, comuna: ''})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                   >
-                     <option value="">Selecciona tu Región</option>
+                     <option value="">Selecciona...</option>
                      {REGIONES_CHILE.map(r => (
                         <option key={r.region} value={r.region}>{r.region}</option>
                      ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Comuna de Destino</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Comuna</label>
                   <select required
                     value={formData.comuna} 
                     disabled={!formData.region}
                     onChange={e => setFormData({...formData, comuna: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition disabled:opacity-50"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition disabled:opacity-50"
                   >
-                     <option value="">Selecciona tu Comuna</option>
+                     <option value="">Selecciona...</option>
                      {formData.region && REGIONES_CHILE.find(r => r.region === formData.region)?.comunas.map(c => (
                         <option key={c} value={c}>{c}</option>
                      ))}
@@ -229,35 +225,35 @@ export default function CartPage() {
                 </div>
 
                 {showError && (
-                   <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm font-medium flex items-start gap-3 animate-fade-in shadow-sm">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 shrink-0 mt-0.5">
+                   <div className="sm:col-span-2 bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-medium flex items-start gap-2 animate-fade-in shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 shrink-0 mt-0.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                       </svg>
-                      Lo sentimos, la tienda no registra cobertura de despacho habilitada para la comuna de {formData.comuna}. Contacta al vendedor para más información o selecciona otra comuna.
+                      Lo sentimos, sin cobertura en {formData.comuna}. Contacta al vendedor.
                    </div>
                 )}
 
                 {showAddress && (
-                  <div className="animate-fade-in">
+                  <div className="sm:col-span-2 animate-fade-in">
                     <label className="block text-xs font-bold text-slate-500 mb-1">Dirección Exacta de Despacho</label>
                     <input required
                       value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}
-                      type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="Av. Principal 123, Depto 4B" />
+                      type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="Av. Principal 123, Depto 4B" />
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-slate-100 pt-6 space-y-3 mb-6">
-                 <div className="flex justify-between text-slate-500">
+              <div className="border-t border-slate-100 pt-4 space-y-2 mb-4">
+                 <div className="flex justify-between text-slate-500 text-sm">
                     <span>Subtotal ({totalItems} items)</span>
                     <span>${totalAmount.toLocaleString('es-CL')}</span>
                  </div>
-                 <div className="flex justify-between text-slate-500">
+                 <div className="flex justify-between text-slate-500 text-sm">
                     <span>Envío</span>
                     <span className="text-emerald-600 font-bold">Por Confirmar</span>
                  </div>
-                 <div className="flex justify-between text-xl font-black text-slate-900 pt-3 border-t border-slate-100">
-                    <span>Total a Pagar</span>
+                 <div className="flex justify-between text-lg font-black text-slate-900 pt-2 border-t border-slate-100">
+                    <span>Total</span>
                     <span className="text-blue-600">${totalAmount.toLocaleString('es-CL')}</span>
                  </div>
               </div>
@@ -265,7 +261,7 @@ export default function CartPage() {
               <button 
                 type="submit"
                 disabled={isSubmitting || showError || !showAddress}
-                className={`w-full bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition pwa-safe-bottom
+                className={`w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl flex items-center justify-center space-x-2 transition pwa-safe-bottom
                   ${(isSubmitting || showError || !showAddress) ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:bg-emerald-700 active:scale-[0.98]'}
                 `}
               >
