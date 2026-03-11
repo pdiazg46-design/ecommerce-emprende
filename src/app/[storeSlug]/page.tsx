@@ -43,7 +43,7 @@ export default async function Home({ params }: { params: Promise<{ storeSlug: st
     },
     take: 12,
     orderBy: {
-      updatedAt: 'desc'
+      name: 'asc'
     }
   })
 

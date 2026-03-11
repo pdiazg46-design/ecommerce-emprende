@@ -95,7 +95,7 @@ export function BrandConfig() {
          </div>
          <div>
            <h2 className="text-xl font-bold">Personalización de Marca</h2>
-           <p className="text-slate-500 text-sm">Cambia los logos y el nombre visible para tus clientes.</p>
+           <p className="text-slate-600 text-sm font-medium">Cambia los logos y el nombre visible para tus clientes.</p>
          </div>
       </div>
       
@@ -135,7 +135,7 @@ export function BrandConfig() {
                 placeholder="mi-tienda-online"
               />
             </div>
-            <p className="text-xs text-slate-500 mt-1">Usa solo minúsculas, números o guiones. Este será el link que compartirás a tus clientes.</p>
+            <p className="text-xs text-slate-600 font-medium mt-1.5">Usa solo minúsculas, números o guiones. Este será el link que compartirás a tus clientes.</p>
           </div>
         </div>
         
@@ -178,7 +178,7 @@ export function BrandConfig() {
                   )}
                   <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploadingLogo} />
                 </label>
-                <p className="text-xs text-slate-500 mt-2">Recomendado: Imagen cuadrada (PNG/JPG o transparente).</p>
+                <p className="text-xs text-slate-600 font-medium mt-2">Recomendado: Imagen cuadrada (PNG/JPG o transparente).</p>
              </div>
           </div>
         </div>

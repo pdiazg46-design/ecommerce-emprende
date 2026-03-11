@@ -39,7 +39,7 @@ export async function GET() {
         }
       },
       orderBy: {
-        updatedAt: 'desc'
+        name: 'asc'
       }
     })
 
