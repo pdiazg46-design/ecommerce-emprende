@@ -11,12 +11,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMsg, setSuccessMsg] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isRecovering, setIsRecovering] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+    setSuccessMsg(null)
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -25,13 +28,43 @@ export default function LoginPage() {
 
     if (error) {
       console.error('[DIAGNÓSTICO SUPABASE] Error completo:', error)
-      setError(`Error: ${error.message} (Revisa la consola)`)
+      setError(`Error: ${error.message} (Si olvidaste tu clave, usa el acceso automático)`)
       setIsLoading(false)
     } else {
       console.log('[DIAGNÓSTICO SUPABASE] Éxito:', data)
       router.push('/admin/catalogo')
       router.refresh()
     }
+  }
+
+  const handleMagicLink = async () => {
+    if (!email) {
+      setError('Por favor, ingresa tu correo electrónico arriba para enviarte el enlace.')
+      return
+    }
+    
+    setIsRecovering(true)
+    setError(null)
+    setSuccessMsg(null)
+
+    // baseUrl as fallback for redirect
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+    
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${baseUrl}/admin/catalogo`,
+      }
+    })
+
+    if (error) {
+       console.error("Error Magic Link:", error)
+       setError(`No pudimos enviar el enlace: ${error.message}`)
+    } else {
+       setSuccessMsg(`¡Enlace enviado! Revisa tu bandeja de entrada en ${email} e ingresa con un clic.`)
+    }
+    
+    setIsRecovering(false)
   }
 
   return (
@@ -113,13 +146,37 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div>
+            {successMsg && (
+              <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100 flex gap-2 items-center text-emerald-700 text-sm font-medium">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 flex-shrink-0">
+                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                 </svg>
+                {successMsg}
+              </div>
+            )}
+
+            <div className="space-y-3">
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || isRecovering}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all active:scale-[0.98] disabled:opacity-70"
               >
                 {isLoading ? 'Iniciando sesión...' : 'Ingresar'}
+              </button>
+
+              <div className="relative flex items-center py-2">
+                <div className="flex-grow border-t border-slate-200"></div>
+                <span className="flex-shrink-0 mx-4 text-slate-400 text-xs font-semibold uppercase tracking-wider">O recupera acceso</span>
+                <div className="flex-grow border-t border-slate-200"></div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleMagicLink}
+                disabled={isLoading || isRecovering}
+                className="w-full flex justify-center py-3 px-4 border-2 border-slate-200 rounded-xl shadow-sm text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 transition-all active:scale-[0.98] disabled:opacity-70 group"
+              >
+                {isRecovering ? 'Enviando enlace...' : 'Recibir Enlace de Acceso Automático'}
               </button>
             </div>
           </form>
