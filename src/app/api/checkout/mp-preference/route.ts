@@ -83,7 +83,9 @@ export async function POST(req: Request) {
 
     if (!mpResponse.ok) {
         console.error('MercadoPago API Error:', mpData)
-        return NextResponse.json({ error: 'Error al comunicarse con MercadoPago' }, { status: 502 })
+        return NextResponse.json({ 
+          error: `Error de MercadoPago: ${mpData.message || mpData.error || 'Rechazo de formato'}` 
+        }, { status: 502 })
     }
 
     // Retornamos el link adecuado. Si es TEST, devolvemos el sandbox, de lo contrario el init_point
