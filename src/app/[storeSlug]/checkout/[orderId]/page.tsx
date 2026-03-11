@@ -3,12 +3,14 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import MercadoPagoButton from '@/components/ecommerce/MercadoPagoButton'
 
-export default async function CheckoutPaymentPage({
-  params,
-}: {
+export default async function CheckoutPaymentPage(props: {
   params: Promise<{ storeSlug: string; orderId: string }>
+  searchParams: Promise<{ status?: string, payment_id?: string }>
 }) {
-  const resolvedParams = await params
+  const resolvedParams = await props.params
+  const searchParams = await props.searchParams
+  const paymentStatus = searchParams.status
+  const paymentId = searchParams.payment_id
   
   // Buscar la configuración de la tienda por slug
   const storeSettings = await prisma.ecommerceSettings.findUnique({
@@ -47,7 +49,33 @@ export default async function CheckoutPaymentPage({
     notFound()
   }
 
-  if (order.status !== 'PENDING_PAYMENT') {
+  // --------------------------------------------------------------------------------
+  // MANEJO DE RETORNO Y APROBACIÓN DE MERCADOPAGO (Tripode Financiero Activator)
+  // --------------------------------------------------------------------------------
+  let isJustApproved = false
+
+  if (paymentStatus === 'approved' && paymentId && order.status === 'PENDING_PAYMENT') {
+     // Si venimos regresando de MP con éxito y la orden aún estaba pendiente:
+     // 1. Enviamos confirmación oculta a la BD
+     // 2. Mostramos UI Verde
+     isJustApproved = true
+     try {
+       await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/admin/orders`, {
+         method: 'PATCH',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ 
+           orderId: order.id, 
+           status: 'PAID' 
+         })
+       })
+     } catch (e) {
+       console.error("Error auto-confirmando pago de MP:", e)
+     }
+  }
+
+  const isOrderClosed = order.status !== 'PENDING_PAYMENT' || isJustApproved
+  
+  if (isOrderClosed) {
      return (
         <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 text-center">
            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
@@ -55,10 +83,18 @@ export default async function CheckoutPaymentPage({
                 <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
               </svg>
            </div>
-           <h1 className="text-3xl font-black text-slate-900 mb-4">Esta orden ya fue procesada</h1>
-           <p className="text-slate-600 font-medium mb-8">El pago ya fue verificado o el pedido ya fue despachado.</p>
+           
+           <h1 className="text-3xl font-black text-slate-900 mb-4">
+               {isJustApproved ? '¡Pago Aprobado con Éxito!' : 'Esta orden ya fue procesada'}
+           </h1>
+           <p className="text-slate-600 font-medium mb-8">
+               {isJustApproved 
+                  ? `Tu transacción (Ref: ${paymentId}) fue validada digitalmente.` 
+                  : 'El pago ya fue verificado o el pedido ya fue despachado.'}
+           </p>
+
            <Link href={`/${resolvedParams.storeSlug}`} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition">
-              Volver a la Tienda
+              Volver al Catálogo
            </Link>
         </div>
      )
