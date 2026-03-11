@@ -190,7 +190,7 @@ export function BrandConfig() {
 
           {!shippingCoverage.includes('Todo Chile') && (
             <div className="bg-white p-5 rounded-xl border border-slate-200 space-y-4 shadow-sm animate-fade-in">
-               <h4 className="text-sm font-bold text-slate-800">Constructor de Zonas Restringidas</h4>
+               <h4 className="text-sm font-bold text-slate-800">1. Añadir Nuevas Zonas:</h4>
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Selector de Región */}
@@ -261,19 +261,27 @@ export function BrandConfig() {
 
           {/* Listado de Píldoras Activas */}
           {shippingCoverage.length > 0 && !shippingCoverage.includes('Todo Chile') && (
-            <div className="mt-4 p-4 border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/30">
-               <span className="block text-xs font-bold text-blue-800 mb-3">Tus Zonas de Despacho Actuales:</span>
-               <div className="flex flex-wrap gap-2">
+            <div className="mt-6 p-5 border-2 border-blue-400 rounded-xl bg-blue-50/50 shadow-sm animate-fade-in">
+               <div className="flex items-center gap-2 mb-4">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-blue-700">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                 </svg>
+                 <span className="block text-sm font-black text-blue-900 uppercase tracking-wide">2. Zonas Actualmente Guardadas ({shippingCoverage.length}):</span>
+               </div>
+               <p className="text-xs text-blue-800 mb-4 font-medium">Estas son las áreas donde tus clientes podrán pedir despachos. Haz clic en la "X" roja para eliminar una comuna o región si ya no quieres despachar allí.</p>
+               
+               <div className="flex flex-wrap gap-2.5">
                  {shippingCoverage.map(zone => (
-                    <span key={zone} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-white border border-blue-300 text-blue-900 shadow-sm">
+                    <span key={zone} className="inline-flex items-center gap-2 py-2 pl-4 pr-2 rounded-lg text-sm font-bold bg-white border-2 border-blue-400 text-blue-900 shadow-sm">
                        {zone}
                        <button 
                          type="button" 
+                         title="Eliminar esta zona"
                          onClick={() => setShippingCoverage(prev => prev.filter(z => z !== zone))}
-                         className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-0.5 transition"
+                         className="text-rose-400 hover:text-white hover:bg-rose-500 rounded-md p-1 transition-colors ml-1"
                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                           </svg>
                        </button>
                     </span>
