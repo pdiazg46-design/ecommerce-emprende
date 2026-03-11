@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import MercadoPagoButton from '@/components/ecommerce/MercadoPagoButton'
+import AutoConfirmPayment from '@/components/ecommerce/AutoConfirmPayment'
 
 export default async function CheckoutPaymentPage(props: {
   params: Promise<{ storeSlug: string; orderId: string }>
@@ -52,27 +53,8 @@ export default async function CheckoutPaymentPage(props: {
   // --------------------------------------------------------------------------------
   // MANEJO DE RETORNO Y APROBACIÓN DE MERCADOPAGO (Tripode Financiero Activator)
   // --------------------------------------------------------------------------------
-  let isJustApproved = false
-
-  if (paymentStatus === 'approved' && paymentId && order.status === 'PENDING_PAYMENT') {
-     // Si venimos regresando de MP con éxito y la orden aún estaba pendiente:
-     // 1. Enviamos confirmación oculta a la BD
-     // 2. Mostramos UI Verde
-     isJustApproved = true
-     try {
-       await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/admin/orders`, {
-         method: 'PATCH',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ 
-           orderId: order.id, 
-           status: 'PAID' 
-         })
-       })
-     } catch (e) {
-       console.error("Error auto-confirmando pago de MP:", e)
-     }
-  }
-
+  
+  const isJustApproved = paymentStatus === 'approved' && paymentId && order.status === 'PENDING_PAYMENT'
   const isOrderClosed = order.status !== 'PENDING_PAYMENT' || isJustApproved
   
   if (isOrderClosed) {
@@ -96,6 +78,11 @@ export default async function CheckoutPaymentPage(props: {
            <Link href={`/${resolvedParams.storeSlug}`} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition">
               Volver al Catálogo
            </Link>
+
+           {/* Componente Cliente Invisible que dispara el Webhook del Tripode a la BD de forma confiable */}
+           {isJustApproved && (
+             <AutoConfirmPayment orderId={order.id} />
+           )}
         </div>
      )
   }

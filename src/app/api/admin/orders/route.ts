@@ -86,7 +86,7 @@ export async function PATCH(req: Request) {
     // registramos la caja en Emprende (Trípode de Ventas)
     const isTransitioningToPaid = status === 'PAID' && existingOrder.status !== 'PAID'
 
-    // Ejecutar Transacción Atómica
+    // Ejecutar Transacción Atómica SÓLO para la consistencia del E-Commerce (Orden & Stock)
     const updatedOrder = await prisma.$transaction(async (tx) => {
        // 1. Actualizar el estado del Pedido
        const order = await tx.ecommerceOrder.update({
@@ -99,38 +99,42 @@ export async function PATCH(req: Request) {
          include: { items: { include: { product: true } } }
        })
 
-       // 2. Si es transición a Pagado, Crear Ingreso(s) Financiero(s) en App Emprende
+       // 2. Si es transición a Pagado, descontar inventario del Sistema Central
        if (isTransitioningToPaid) {
-          // Podemos generar 1 transacción global en Emprende o 1 por ítem. 
-          // Dada la estructura de `Transaction` que pide projectId/quantity, haremos 1 transacción global por el Total de la boleta.
-          // Idealmente se desglosaría si `Transaction` lo soportara natively, pero Emprende-POS está diseñado para leer Type: VENTA.
-          await tx.transaction.create({
-             data: {
-                userId: dbUser.id,
-                type: 'WEB_SALE',
-                paymentMethod: 'ONLINE',
-                taxDocumentType: 'BOLETA', // Asumido por defecto SaaS
-                amount: order.totalAmount, // El monto real de la venta
-                quantity: 1, // 1 canasta
-                description: `Venta E-Commerce #${order.id.slice(-6).toUpperCase()} (${order.customerName})`,
-                date: new Date()
-             }
-          })
-          
-          // Además, siendo congruentes con el tripode, aquí descontamos el inventario 
-          // (Puesto que se sacó del checkout y se pasó a la confirmación de pago)
           for (const item of order.items) {
              await tx.product.update({
                where: { id: item.productId },
                data: {
                  stockEcommerce: { decrement: item.quantity },
-                 stock: { decrement: item.quantity } // Descuenta del stock físico también por seguridad de la feria
+                 stock: { decrement: item.quantity }
                }
              })
           }
        }
        return order
     })
+
+    // 3. (TRÍPODE) Registrar el flujo de dinero en Emprende (F29) de forma AISLADA
+    //    Si esto falla por falta de campos de otras apps, no hará Rollback a la Venta asegurada.
+    if (isTransitioningToPaid) {
+        try {
+           await prisma.transaction.create({
+              data: {
+                 userId: dbUser.id,
+                 type: 'WEB_SALE',
+                 paymentMethod: 'ONLINE',
+                 taxDocumentType: 'BOLETA', // Asumido por defecto SaaS
+                 amount: updatedOrder.totalAmount, // El monto real de la venta
+                 quantity: 1, // 1 canasta
+                 description: `Venta E-Commerce #${updatedOrder.id.slice(-6).toUpperCase()} (${updatedOrder.customerName})`,
+                 date: new Date()
+              }
+           })
+        } catch (tripodeError) {
+           console.error("[CRÍTICO] Falló el Tripode a Emprende para la orden:", updatedOrder.id, tripodeError)
+           // Aquí podríamos despachar mail interno a Soporte si existiese.
+        }
+    }
 
     return NextResponse.json({ success: true, order: updatedOrder })
 
