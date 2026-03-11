@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase-client'
 import { ImageUploader } from '@/components/admin/ImageUploader'
 import { BrandConfig } from '@/components/admin/BrandConfig'
 
@@ -13,6 +14,14 @@ export default function AdminCatalogo() {
   const [error, setError] = useState<string | null>(null)
   const [filterType, setFilterType] = useState<'ALL' | 'READY' | 'ATTENTION'>('ALL')
   const [showBrandModal, setShowBrandModal] = useState(false)
+  const router = useRouter()
+  const supabase = createClient()
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   // Estado para controlar qué producto está siendo editado
   const [editingDescId, setEditingDescId] = useState<string | null>(null)
@@ -98,7 +107,7 @@ export default function AdminCatalogo() {
               </div>
               
               <button 
-                 onClick={() => signOut({ callbackUrl: '/login' })}
+                 onClick={handleLogout}
                  className="ml-4 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex items-center justify-center group"
                  title="Cerrar Sesión"
               >

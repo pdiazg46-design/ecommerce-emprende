@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase-client'
 
 export default function AdminVentas() {
   const [orders, setOrders] = useState<any[]>([])
@@ -14,6 +15,15 @@ export default function AdminVentas() {
   // Estado del Modal de Despacho
   const [shippingModalData, setShippingModalData] = useState<{ id: string, courierName: string, trackingNumber: string } | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  
+  const router = useRouter()
+  const supabase = createClient()
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   useEffect(() => {
     async function fetchOrders() {
@@ -119,7 +129,7 @@ export default function AdminVentas() {
               </div>
               
               <button 
-                 onClick={() => signOut({ callbackUrl: '/login' })}
+                 onClick={handleLogout}
                  className="ml-4 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex items-center justify-center group"
                  title="Cerrar Sesión"
               >
