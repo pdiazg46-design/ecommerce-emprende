@@ -8,30 +8,30 @@ datasource db {
 }
 
 model User {
-  id                 String           @id @default(cuid())
+  id                 String             @id @default(cuid())
   name               String?
-  email              String?          @unique
+  email              String?            @unique
   emailVerified      DateTime?
   image              String?
   phone              String?
   allowedMachineIds  String?
-  createdAt          DateTime         @default(now())
-  trialStartsAt      DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  role               String           @default("USER")
-  subscriptionStatus String           @default("TRIAL")
-  subscriptionPlan   String           @default("BASIC")
-  f29Active          Boolean          @default(false)
-  ppmRate            Float            @default(1.0)
+  createdAt          DateTime           @default(now())
+  trialStartsAt      DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  role               String             @default("USER")
+  subscriptionStatus String             @default("TRIAL")
+  subscriptionPlan   String             @default("BASIC")
+  f29Active          Boolean            @default(false)
+  ppmRate            Float              @default(1.0)
   mpPreapprovalId    String?
-  nextPaymentDate    DateTime?        @default(now())
+  nextPaymentDate    DateTime?          @default(now())
   notes              String?
   mpAccessToken      String?
   mpPublicKey        String?
-  useSumUp           Boolean          @default(false)
-  acceptsCash        Boolean          @default(true)
-  acceptsMercadoPago Boolean          @default(false)
-  acceptsTransfer    Boolean          @default(false)
+  useSumUp           Boolean            @default(false)
+  acceptsCash        Boolean            @default(true)
+  acceptsMercadoPago Boolean            @default(false)
+  acceptsTransfer    Boolean            @default(false)
   bankName           String?
   accountType        String?
   accountNumber      String?
@@ -43,6 +43,7 @@ model User {
   sessions           Session[]
   transactions       Transaction[]
   EcommerceOrder     EcommerceOrder[]
+  EcommerceSettings  EcommerceSettings?
 }
 
 model Account {
@@ -152,4 +153,20 @@ model Transaction {
 
   @@index([userId, createdAt])
   @@index([userId, type, createdAt])
+}
+
+model EcommerceSettings {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  storeSlug    String? @unique
+  storeName    String  @default("Mi Tienda")
+  storeSlogan  String?
+  primaryColor String? @default("#4285F4")
+  logoUrl      String?
+  isActive     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
