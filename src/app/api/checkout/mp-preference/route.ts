@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       },
       auto_return: 'approved',
       external_reference: order.id,
-      statement_descriptor: `EMPRENDE ${storeSlug.toUpperCase()}`,
+      statement_descriptor: (settings?.storeName || storeSlug).substring(0, 16).toUpperCase(), // Restricción de 16 caracteres de MP
     }
 
     const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
