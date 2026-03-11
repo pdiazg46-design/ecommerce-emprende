@@ -9,7 +9,11 @@ export default function CartPage() {
   const cart = useCartStore()
   const router = useRouter()
   const params = useParams()
-  const storeSlug = params.storeSlug as string
+  // Limpiamos el store slug desde params del router
+  const storeSlug = typeof params.storeSlug === 'string' 
+     ? decodeURIComponent(params.storeSlug).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-')
+     : ''
+     
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   // Basic Form State (En un caso real se usaría React Hook Form)

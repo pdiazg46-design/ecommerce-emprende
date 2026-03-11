@@ -33,8 +33,15 @@ export function BrandConfig() {
     setSaving(true)
     
     try {
-      // Limpiar el slug para que sea url-friendly
-      const cleanSlug = storeSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-')
+      // Limpiar el slug: quitar acentos, pasar a minúsculas, espacios a guiones
+      const cleanSlug = storeSlug
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Remueve marcas diacríticas (tildes)
+        .replace(/\s+/g, '-') // Reemplaza espacios por guiones
+        .replace(/[^a-z0-9-]/g, '') // Todo lo demás que no sea letra o número
+        .replace(/-+/g, '-') // Elimina guiones dobles
       
       const res = await fetch('/api/ecommerce-settings', {
         method: 'POST',

@@ -9,10 +9,20 @@ export const dynamic = 'force-dynamic'
 export default async function Home({ params }: { params: Promise<{ storeSlug: string }> }) {
   const { storeSlug } = await params;
   const decodedStoreSlug = decodeURIComponent(storeSlug);
+  
+  // Limpiamos el slug recibido en caso de que alguien haya entrado tipeando tildes y mayúsculas
+  const formattedStoreSlug = decodedStoreSlug
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-');
 
   // Buscar el usuario al que le pertenece la tienda
   const settingsOwner = await prisma.ecommerceSettings.findUnique({
-    where: { storeSlug: decodedStoreSlug },
+    where: { storeSlug: formattedStoreSlug },
     include: { user: true }
   })
 
