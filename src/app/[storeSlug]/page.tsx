@@ -143,7 +143,7 @@ export default async function Home({ params }: { params: Promise<{ storeSlug: st
                       price: product.price,
                       imageUrl: product.imageUrl,
                       stock: product.stock
-                    }} storeSlug={storeSlug} />
+                    }} />
                   </div>
                 </div>
               </div>

@@ -11,10 +11,9 @@ interface CatalogAddToCartProps {
     imageUrl?: string | null
     stock: number // Referencia para futuras validaciones si se desea
   }
-  storeSlug: string
 }
 
-export function CatalogAddToCart({ product, storeSlug }: CatalogAddToCartProps) {
+export function CatalogAddToCart({ product }: CatalogAddToCartProps) {
   const addItem = useCartStore(state => state.addItem)
 
   const handleAddToCart = (e: MouseEvent<HTMLButtonElement>) => {

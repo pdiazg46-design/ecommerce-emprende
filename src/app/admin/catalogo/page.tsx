@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { ImageUploader } from '@/components/admin/ImageUploader'
 import { BrandConfig } from '@/components/admin/BrandConfig'
 
@@ -27,8 +27,9 @@ export default function AdminCatalogo() {
         }
         const data = await res.json()
         setProducts(data.products || [])
-      } catch (err: any) {
-        setError(err.message || String(err))
+      } catch (err) {
+        const error = err as Error;
+        setError(error.message || String(error))
       } finally {
         setIsLoading(false)
       }
