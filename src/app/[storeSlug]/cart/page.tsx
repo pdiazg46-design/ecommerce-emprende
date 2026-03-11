@@ -18,6 +18,7 @@ export default function CartPage() {
      : ''
      
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [shippingCoverage, setShippingCoverage] = useState<string[]>([])
   
   // Basic Form State (En un caso real se usaría React Hook Form)
   const [formData, setFormData] = useState({
@@ -32,7 +33,17 @@ export default function CartPage() {
   
   useEffect(() => {
     setMounted(true)
-  }, [])
+    if (storeSlug) {
+      fetch(`/api/store-info/${storeSlug}`)
+        .then(res => res.json())
+        .then(data => {
+           if (data && data.shippingCoverage) {
+              setShippingCoverage(data.shippingCoverage)
+           }
+        })
+        .catch(err => console.error("Error fetching coverage in cart:", err))
+    }
+  }, [storeSlug])
 
   if (!mounted) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Cargando carrito...</div>
 
@@ -140,6 +151,22 @@ export default function CartPage() {
            <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 sticky top-24">
               <h2 className="text-xl font-bold text-slate-900 mb-6">Datos de Envío</h2>
               
+              {shippingCoverage.length > 0 && (
+                <div className="mb-6 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-xl">
+                   <div className="flex items-start gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-blue-700 mt-0.5 shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                      </svg>
+                      <div>
+                        <h3 className="font-bold text-blue-900 text-sm">Zonas de Reparto Habilitadas</h3>
+                        <p className="text-xs text-blue-800 mt-1.5 leading-snug">
+                           Esta tienda realiza envíos exclusivamente a: <strong className="font-black text-blue-950">{shippingCoverage.join(' | ')}</strong>. Ingresa una dirección válida dentro de esta cobertura.
+                        </p>
+                      </div>
+                   </div>
+                </div>
+              )}
+
               <div className="space-y-4 mb-8">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">Nombre Completo</label>

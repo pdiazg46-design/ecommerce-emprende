@@ -162,9 +162,10 @@ model EcommerceSettings {
   storeSlug    String? @unique
   storeName    String  @default("Mi Tienda")
   storeSlogan  String?
-  primaryColor String? @default("#4285F4")
-  logoUrl      String?
-  isActive     Boolean @default(true)
+  primaryColor     String?  @default("#4285F4")
+  logoUrl          String?
+  isActive         Boolean  @default(true)
+  shippingCoverage String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

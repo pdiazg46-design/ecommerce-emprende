@@ -9,6 +9,7 @@ export function BrandConfig() {
   const [storeSlogan, setStoreSlogan] = useState('Tu visión, nuestra tecnología')
   const [storeSlug, setStoreSlug] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
+  const [shippingCoverage, setShippingCoverage] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -23,6 +24,7 @@ export function BrandConfig() {
           setStoreSlogan(data.storeSlogan || 'Tu visión, nuestra tecnología')
           setStoreSlug(data.storeSlug || '')
           setLogoUrl(data.logoUrl || '')
+          setShippingCoverage(data.shippingCoverage || [])
         }
       })
       .finally(() => setLoading(false))
@@ -46,7 +48,7 @@ export function BrandConfig() {
       const res = await fetch('/api/ecommerce-settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ storeName, storeSlogan, storeSlug: cleanSlug, logoUrl })
+        body: JSON.stringify({ storeName, storeSlogan, storeSlug: cleanSlug, logoUrl, shippingCoverage })
       })
       
       if (res.ok) {
@@ -146,6 +148,75 @@ export function BrandConfig() {
           </div>
         </div>
         
+        {/* Cobertura de Despachos */}
+        <div className="md:col-span-2 bg-blue-50/50 border border-blue-100 p-5 rounded-2xl mb-2 mt-4">
+          <label className="block text-base font-bold text-slate-900 mb-2">Cobertura de Despachos</label>
+          <p className="text-sm text-slate-600 mb-4 font-medium">Selecciona dónde realizas envíos. Esta información se destacará a tus clientes en el Carro de Compras.</p>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <label className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={shippingCoverage.includes('Todo Chile')}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                     setShippingCoverage(prev => [...prev.filter(c => c !== 'Todo Chile'), 'Todo Chile'])
+                  } else {
+                     setShippingCoverage(prev => prev.filter(c => c !== 'Todo Chile'))
+                  }
+                }}
+                className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500" 
+              />
+              <span className="text-sm font-semibold text-slate-800">Todo Chile</span>
+            </label>
+
+            <label className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={shippingCoverage.includes('Región Metropolitana')}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                     setShippingCoverage(prev => [...prev.filter(c => c !== 'Región Metropolitana'), 'Región Metropolitana'])
+                  } else {
+                     setShippingCoverage(prev => prev.filter(c => c !== 'Región Metropolitana'))
+                  }
+                }}
+                className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500" 
+              />
+              <span className="text-sm font-semibold text-slate-800">Solo Región Metropolitana</span>
+            </label>
+            
+            <label className="flex items-center space-x-3 bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={shippingCoverage.includes('Otras Comunas Específicas')}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                     setShippingCoverage(prev => [...prev.filter(c => c !== 'Otras Comunas Específicas'), 'Otras Comunas Específicas'])
+                  } else {
+                     setShippingCoverage(prev => prev.filter(c => c !== 'Otras Comunas Específicas'))
+                  }
+                }}
+                className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" 
+              />
+              <span className="text-sm font-semibold text-slate-800 flex items-center gap-1">
+                 Limitar a Comunas 
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                 </svg>
+              </span>
+            </label>
+          </div>
+          
+          {shippingCoverage.includes('Otras Comunas Específicas') && (
+            <div className="mt-3 bg-white p-3 rounded-xl border border-emerald-200">
+              <p className="text-xs text-emerald-700 font-medium leading-relaxed">
+                 Las opciones limitadas permiten especificar tus zonas operativas. Informaremos a tus clientes que despachas a "Comunas Específicas" en la cabecera del carro.
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Subida Visual de Logotipo */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">Logotipo de la Tienda</label>

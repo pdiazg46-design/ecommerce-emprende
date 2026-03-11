@@ -27,7 +27,8 @@ export async function GET(req: NextRequest) {
         storeSlogan: "Tu visión, nuestra tecnología",
         storeSlug: null,
         logoUrl: null,
-        primaryColor: "#4285F4"
+        primaryColor: "#4285F4",
+        shippingCoverage: []
       }
     )
   } catch (error) {
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    const { storeName, storeSlogan, storeSlug, logoUrl, primaryColor } = await req.json()
+    const { storeName, storeSlogan, storeSlug, logoUrl, primaryColor, shippingCoverage } = await req.json()
 
     const dbUser = await prisma.user.findUnique({
       where: { email: user.email }
@@ -63,7 +64,8 @@ export async function POST(req: NextRequest) {
         storeSlogan,
         storeSlug,
         logoUrl,
-        primaryColor
+        primaryColor,
+        shippingCoverage
       },
       create: {
         userId: dbUser.id,
@@ -71,7 +73,8 @@ export async function POST(req: NextRequest) {
         storeSlogan: storeSlogan || "Tu visión, nuestra tecnología",
         storeSlug,
         logoUrl,
-        primaryColor: primaryColor || "#4285F4"
+        primaryColor: primaryColor || "#4285F4",
+        shippingCoverage: shippingCoverage || []
       }
     })
 
