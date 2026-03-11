@@ -9,10 +9,12 @@ interface PageProps {
 export default async function ProductPage({ params }: PageProps) {
   // En Next.js 15, los params de página dinámica son una Promesa.
   const resolvedParams = await params
+  const decodedStoreSlug = decodeURIComponent(resolvedParams.storeSlug);
+  const decodedProductSlug = decodeURIComponent(resolvedParams.slug);
 
   // Primero verificamos que la tienda existe (Igual que el Index Principal)
   const settingsOwner = await prisma.ecommerceSettings.findUnique({
-    where: { storeSlug: resolvedParams.storeSlug },
+    where: { storeSlug: decodedStoreSlug },
     select: { userId: true }
   })
 
@@ -24,8 +26,8 @@ export default async function ProductPage({ params }: PageProps) {
   const product = await prisma.product.findFirst({
     where: {
       OR: [
-        { slug: resolvedParams.slug },
-        { id: resolvedParams.slug }
+        { slug: decodedProductSlug },
+        { id: decodedProductSlug }
       ],
       user: {
         id: settingsOwner.userId

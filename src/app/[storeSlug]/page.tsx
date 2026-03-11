@@ -8,10 +8,11 @@ export const dynamic = 'force-dynamic'
 
 export default async function Home({ params }: { params: Promise<{ storeSlug: string }> }) {
   const { storeSlug } = await params;
+  const decodedStoreSlug = decodeURIComponent(storeSlug);
 
   // Buscar el usuario al que le pertenece la tienda
   const settingsOwner = await prisma.ecommerceSettings.findUnique({
-    where: { storeSlug: storeSlug },
+    where: { storeSlug: decodedStoreSlug },
     include: { user: true }
   })
 
