@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { CartBadge } from '@/components/cart/CartBadge'
 import { CatalogAddToCart } from '@/components/cart/CatalogAddToCart'
+import { ProductStockBadge } from '@/components/cart/ProductStockBadge'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
@@ -142,9 +143,7 @@ export default async function Home({ params }: { params: Promise<{ storeSlug: st
                       </svg>
                     </div>
                   )}
-                   <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md shadow-sm text-xs font-bold text-slate-700">
-                     {product.stock} disp.
-                  </div>
+                  <ProductStockBadge productId={product.id} initialStock={product.stock} />
                   {/* Overlay interactivo para "Ver Detalles" */}
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 translate-y-[110%] group-hover:translate-y-0 transition-transform duration-300 flex justify-center">
                     <span className="text-white text-sm font-semibold tracking-wide">Visitar detalles e imágenes</span>

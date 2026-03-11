@@ -1,7 +1,8 @@
 'use client'
 
 import { useCartStore } from '@/lib/cart-store'
-import { MouseEvent } from 'react'
+import { MouseEvent, useEffect } from 'react'
+import { useRealtimeStockStore } from '@/lib/realtime-stock-store'
 
 interface CatalogAddToCartProps {
   product: {
@@ -9,16 +10,26 @@ interface CatalogAddToCartProps {
     name: string
     price: number
     imageUrl?: string | null
-    stock: number // Referencia para futuras validaciones si se desea
+    stock: number // Referencia inicial
   }
 }
 
 export function CatalogAddToCart({ product }: CatalogAddToCartProps) {
   const addItem = useCartStore(state => state.addItem)
+  const initRealtime = useRealtimeStockStore(state => state.initializeRealtime)
+  const realtimeStock = useRealtimeStockStore(state => state.stockMap[product.id])
+
+  useEffect(() => {
+    initRealtime()
+  }, [initRealtime])
+
+  const currentStock = realtimeStock !== undefined ? realtimeStock : product.stock
 
   const handleAddToCart = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault() // Detener la navegación del <Link> envolvente
-    e.stopPropagation() // Evitar propagación al contenedor
+    e.preventDefault() 
+    e.stopPropagation() 
+    
+    if (currentStock <= 0) return
     
     addItem({
       id: product.id,
@@ -27,6 +38,14 @@ export function CatalogAddToCart({ product }: CatalogAddToCartProps) {
       quantity: 1,
       imageUrl: product.imageUrl
     })
+  }
+
+  if (currentStock <= 0) {
+    return (
+      <span className="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100 flex items-center justify-center">
+        Agotado
+      </span>
+    )
   }
 
   return (

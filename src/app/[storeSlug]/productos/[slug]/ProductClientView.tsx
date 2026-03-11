@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCartStore } from '@/lib/cart-store'
+import { useRealtimeStockStore } from '@/lib/realtime-stock-store'
 import Link from 'next/link'
 
 interface ProductClientViewProps {
@@ -10,6 +11,7 @@ interface ProductClientViewProps {
     name: string
     price: number
     stockEcommerce: number
+    stock: number
     imageUrl: string | null
     descriptionLong: string | null
   }
@@ -21,9 +23,18 @@ export function ProductClientView({ product, storeSlug }: ProductClientViewProps
   const addItem = useCartStore(state => state.addItem)
   const cartItems = useCartStore(state => state.items)
   
-  // Calcular cuánto de este producto ya está en el carrito para no exceder 'stockEcommerce'
+  const initRealtime = useRealtimeStockStore(state => state.initializeRealtime)
+  const realtimeStock = useRealtimeStockStore(state => state.stockMap[product.id])
+
+  useEffect(() => {
+    initRealtime()
+  }, [initRealtime])
+
+  const currentStock = realtimeStock !== undefined ? realtimeStock : product.stock
+  
+  // Calcular cuánto de este producto ya está en el carrito para no exceder
   const inCart = cartItems.find(item => item.id === product.id)?.quantity || 0
-  const maxAvailable = product.stockEcommerce - inCart
+  const maxAvailable = currentStock - inCart
 
   const [added, setAdded] = useState(false)
 
