@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
 export default function AdminVentas() {
   const [orders, setOrders] = useState<any[]>([])
@@ -116,6 +117,14 @@ export default function AdminVentas() {
               <div className="flex flex-col border-l border-slate-300 dark:border-slate-700 pl-6 cursor-pointer" onClick={() => window.location.href = '/'}>
                  <span className="text-2xl font-black tracking-widest text-[#4A87FF] leading-none my-1">EMPRENDE</span>
               </div>
+              
+              <button 
+                 onClick={() => signOut({ callbackUrl: '/login' })}
+                 className="ml-4 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex items-center justify-center group"
+                 title="Cerrar Sesión"
+              >
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" /></svg>
+              </button>
             </div>
             
             <div className="text-right flex items-center gap-4">
