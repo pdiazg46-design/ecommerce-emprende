@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String           @id @default(cuid())
+  name               String?
+  email              String?          @unique
+  emailVerified      DateTime?
+  image              String?
+  phone              String?
+  allowedMachineIds  String?
+  createdAt          DateTime         @default(now())
+  trialStartsAt      DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  role               String           @default("USER")
+  subscriptionStatus String           @default("TRIAL")
+  subscriptionPlan   String           @default("BASIC")
+  f29Active          Boolean          @default(false)
+  ppmRate            Float            @default(1.0)
+  mpPreapprovalId    String?
+  nextPaymentDate    DateTime?        @default(now())
+  notes              String?
+  mpAccessToken      String?
+  mpPublicKey        String?
+  useSumUp           Boolean          @default(false)
+  acceptsCash        Boolean          @default(true)
+  acceptsMercadoPago Boolean          @default(false)
+  acceptsTransfer    Boolean          @default(false)
+  bankName           String?
+  accountType        String?
+  accountNumber      String?
+  accountHolder      String?
+  accountEmail       String?
+  password           String?
+  accounts           Account[]
+  products           Product[]
+  sessions           Session[]
+  transactions       Transaction[]
+  EcommerceOrder     EcommerceOrder[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Product {
+  id       String  @id @default(cuid())
+  name     String
+  price    Int     @default(0)
+  cost     Int     @default(0)
+  stock    Int     @default(0)
+  minStock Int     @default(5)
+  imageUrl String?
+  userId   String
+
+  // Extensiones E-Commerce Emprende
+  stockEcommerce  Int     @default(0) // Stock dedicado online
+  isActiveOnline  Boolean @default(false)
+  slug            String? @unique
+  descriptionLong String?
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  orderItems   OrderItem[]
+
+  @@index([userId])
+}
+
+model EcommerceOrder {
+  id              String  @id @default(cuid())
+  storeId         String
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  shippingAddress String?
+  status          String  @default("PENDING")
+  totalAmount     Int
+  paymentId       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items OrderItem[]
+  store User        @relation(fields: [storeId], references: [id])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  unitPrice Int
+
+  order   EcommerceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id])
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  type            String
+  amount          Int
+  quantity        Int      @default(1)
+  paymentMethod   String?
+  taxDocumentType String?
+  description     String?
+  date            DateTime @default(now())
+  groupId         String?
+  productId       String?
+  userId          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  product         Product? @relation(fields: [productId], references: [id])
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, type, createdAt])
+}
