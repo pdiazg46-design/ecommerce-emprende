@@ -19,6 +19,7 @@ export default function CartPage() {
      : ''
      
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isFinishing, setIsFinishing] = useState(false) // Nuevo estado antidesmontaje
   const [shippingCoverage, setShippingCoverage] = useState<string[]>([])
   
   const [formData, setFormData] = useState({
@@ -60,7 +61,8 @@ export default function CartPage() {
 
   if (!mounted) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Cargando carrito...</div>
 
-  if (cart.items.length === 0) {
+  // Si no hay tems, Y NO TAMOS saliendo al Banco, mostramos carrito vacío
+  if (cart.items.length === 0 && !isFinishing) {
     return (
       <div className="min-h-screen bg-slate-50 py-12 px-4">
         <div className="max-w-md mx-auto text-center bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
@@ -93,6 +95,8 @@ export default function CartPage() {
        
        if (response.ok) {
          const data = await response.json()
+         
+         setIsFinishing(true) // CONGELA LA INTERFAZ ANTES DEL SALT O Y LIMPIEZA
          
          // Redirigir a la URL Segura de Pagos
          if(data.paymentUrl) {

@@ -59,30 +59,49 @@ export default async function CheckoutPaymentPage(props: {
   
   if (isOrderClosed) {
      return (
-        <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 text-center">
-           <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-              </svg>
-           </div>
+        <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 bg-slate-50">
            
-           <h1 className="text-3xl font-black text-slate-900 mb-4">
-               {isJustApproved ? '¡Pago Aprobado con Éxito!' : 'Esta orden ya fue procesada'}
-           </h1>
-           <p className="text-slate-600 font-medium mb-8">
-               {isJustApproved 
-                  ? `Tu transacción (Ref: ${paymentId}) fue validada digitalmente.` 
-                  : 'El pago ya fue verificado o el pedido ya fue despachado.'}
-           </p>
+           <div className="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200 max-w-xl w-full text-center relative overflow-hidden">
+               {/* Decorative Background */}
+               <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500"></div>
+               
+               <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8 -rotate-3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+               </div>
+               
+               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">
+                   {isJustApproved ? '¡Pago Aprobado!' : 'Orden Verificada'}
+               </h1>
+               
+               <p className="text-slate-500 font-medium mb-8 text-sm sm:text-base">
+                   {isJustApproved 
+                      ? `Tu transacción (Ref: ${paymentId}) fue validada digitalmente con éxito.` 
+                      : 'Este pedido ya se encuentra procesado y pagado en el sistema.'}
+               </p>
 
-           <Link href={`/${resolvedParams.storeSlug}`} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition">
-              Volver al Catálogo
-           </Link>
+               <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 text-left">
+                  <div className="w-full sm:w-auto text-center sm:text-left">
+                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Monto Pagado</p>
+                     <p className="text-3xl font-black text-slate-900">${order.totalAmount.toLocaleString('es-CL')}</p>
+                  </div>
+                  <div className="w-full sm:w-auto h-px sm:h-12 w-12 sm:w-px bg-slate-200 hidden sm:block"></div>
+                  <div className="w-full sm:w-auto text-center sm:text-left">
+                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Código Pedido</p>
+                     <p className="text-xl font-bold text-slate-700 tracking-wider">#{order.id.slice(-6).toUpperCase()}</p>
+                  </div>
+               </div>
 
-           {/* Componente Cliente Invisible que dispara el Webhook del Tripode a la BD de forma confiable */}
-           {isJustApproved && (
-             <AutoConfirmPayment orderId={order.id} />
-           )}
+               <Link href={`/${resolvedParams.storeSlug}`} className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white px-6 py-4 rounded-xl font-bold hover:bg-slate-800 transition active:scale-[0.98]">
+                  ← Volver a la Tienda
+               </Link>
+
+               {/* AutoConfirm Invisible */}
+               {isJustApproved && (
+                 <AutoConfirmPayment orderId={order.id} />
+               )}
+           </div>
         </div>
      )
   }
