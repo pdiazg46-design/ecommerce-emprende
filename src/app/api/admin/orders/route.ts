@@ -51,34 +51,46 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user || !user.email) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-    }
-
     const { orderId, status, courierName, trackingNumber } = await req.json()
 
     if (!orderId || !status) {
        return NextResponse.json({ error: 'Datos incompletos.' }, { status: 400 })
     }
 
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user.email }
-    })
-
-    if (!dbUser) {
-      return NextResponse.json({ error: 'Usuario principal no encontrado' }, { status: 404 })
-    }
-
-    // Verificar que el ID del pedido le pertenezca a la tienda del logueado
     const existingOrder = await prisma.ecommerceOrder.findUnique({
         where: { id: orderId }
     })
     
-    if(!existingOrder || existingOrder.storeId !== dbUser.id) {
-         return NextResponse.json({ error: 'Pedido Inexistente o Prohibido.' }, { status: 403 })
+    if(!existingOrder) {
+         return NextResponse.json({ error: 'Pedido Inexistente.' }, { status: 404 })
+    }
+
+    // Autorización Bifurcada:
+    // 1. Un usuario anónimo (comprador volviendo de MP) SÓLO puede reportar status = 'PAID' para sí mismo
+    // 2. Un usuario autenticado (dueño tienda) puede modificar TODO (Despacho, tracking, status = 'SHIPPED', etc)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    let dbUser;
+    
+    if (user && user.email) {
+       // Viaje Autenticado: Es el dueño de la tienda administrando
+       dbUser = await prisma.user.findUnique({ where: { email: user.email } })
+       
+       if (!dbUser || existingOrder.storeId !== dbUser.id) {
+          return NextResponse.json({ error: 'Prohibido: Esta orden pertenece a otra tienda' }, { status: 403 })
+       }
+    } else {
+       // Viaje Anónimo: Es el cliente regresando del Banco. Solo le permitimos marcar como PAID.
+       if (status !== 'PAID' && status !== existingOrder.status) {
+           return NextResponse.json({ error: 'Acción no autorizada para clientes públicos' }, { status: 401 })
+       }
+       // Para el Trípode Financiero necesitamos el usuario dueño de todos modos
+       dbUser = await prisma.user.findUnique({ where: { id: existingOrder.storeId } })
+       
+       if (!dbUser) {
+           return NextResponse.json({ error: 'Dueño de reserva ilocalizable' }, { status: 404 })
+       }
     }
 
     // Si la orden pasa a PAID (ya sea desde acá o via webhook a futuro), 

@@ -11,7 +11,7 @@ export default function AutoConfirmPayment({ orderId }: { orderId: string }) {
     const confirmPayment = async () => {
       try {
         setHasFired(true)
-        await fetch('/api/admin/orders', {
+        const response = await fetch('/api/admin/orders', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
@@ -19,8 +19,15 @@ export default function AutoConfirmPayment({ orderId }: { orderId: string }) {
             status: 'PAID' 
           })
         })
+
+        if (!response.ok) {
+           const errData = await response.json()
+           console.error("[TRIPODE VERCEL ERROR]", errData)
+           alert("Alerta Administrativa: El pago llegó bien, pero tu tienda falló al descontar el inventario (" + errData.error + "). Usa el ID: " + orderId)
+        }
       } catch (e) {
-        console.error("Error auto-confirmando pago de MP desde Cliente:", e)
+        console.error("Error catastrófico en auto-confirmación:", e)
+        alert("Error de Red al intentar consolidar tu pago: " + (e as Error).message)
       }
     }
 
