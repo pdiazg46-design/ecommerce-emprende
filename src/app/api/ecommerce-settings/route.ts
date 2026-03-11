@@ -13,16 +13,19 @@ export async function GET(req: NextRequest) {
     }
 
     const dbUser = await prisma.user.findUnique({
-      where: { email: user.email },
-      include: { ecommerceSettings: true }
+      where: { email: user.email }
     })
 
     if (!dbUser) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
     }
 
+    const settings = await prisma.ecommerceSettings.findUnique({
+        where: { userId: dbUser.id }
+    })
+
     return NextResponse.json(
-      dbUser.ecommerceSettings || {
+      settings || {
         storeName: "EMPRENDE",
         storeSlogan: "Tu visión, nuestra tecnología",
         storeSlug: null,
