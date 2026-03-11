@@ -94,15 +94,15 @@ export default function CartPage() {
        if (response.ok) {
          const data = await response.json()
          
-         // Vaciar carro antes de salir
-         cart.clearCart()
-         
          // Redirigir a la URL Segura de Pagos
          if(data.paymentUrl) {
            router.push(data.paymentUrl)
+           // Limpieza retrasada para dar tiempo a q se cierre la pestaña actual
+           setTimeout(() => cart.clearCart(), 1500)
          } else {
            // Fallback histórico
            router.push(`/${storeSlug}`)
+           setTimeout(() => cart.clearCart(), 800)
          }
        } else {
          const err = await response.json()
