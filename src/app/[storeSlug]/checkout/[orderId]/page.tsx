@@ -72,6 +72,12 @@ export default async function CheckoutPaymentPage({
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6">
       <div className="max-w-2xl mx-auto">
+        <Link href={`/${resolvedParams.storeSlug}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium mb-8 transition group">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-1 transition-transform">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+           </svg>
+           Regresar a la Tienda
+        </Link>
         <div className="text-center mb-10">
           <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
