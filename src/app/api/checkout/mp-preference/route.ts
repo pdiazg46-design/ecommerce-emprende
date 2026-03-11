@@ -19,8 +19,8 @@ export async function POST(req: Request) {
         },
         store: {
             select: {
-                mpAccessToken: true,
-                ecommerceSettings: { select: { storeSlug: true } }
+                id: true,
+                mpAccessToken: true
             }
         }
       }
@@ -46,7 +46,12 @@ export async function POST(req: Request) {
     }))
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    const storeSlug = order.store.ecommerceSettings?.storeSlug || 'tienda'
+    // Realizamos una consulta adicional para evitar problemas de Typings cruzados con Prisma JS Client Vercel/Local
+    const settings = await prisma.ecommerceSettings.findUnique({
+        where: { userId: order.store.id }
+    })
+    
+    const storeSlug = settings?.storeSlug || 'tienda'
 
     // 3. Crear Preferencia en MP via API Nativa (Fetch)
     const preferenceData = {

@@ -13,8 +13,7 @@ export async function POST(req: Request) {
     // El StoreId actualmente en la demo será el primer Admin Owner del proyecto EMPRENDE
     // ya que este E-Commerce es una tienda única.
     const storeOwner = await prisma.user.findFirst({
-        where: { role: 'ADMIN' },
-        include: { ecommerceSettings: true }
+        where: { role: 'ADMIN' }
     })
     
     if(!storeOwner) {
@@ -62,11 +61,16 @@ export async function POST(req: Request) {
       return newOrder
     })
 
+    // Realizamos una consulta adicional para evitar problemas de Typings cruzados con Prisma JS Client Vercel/Local
+    const settings = await prisma.ecommerceSettings.findUnique({
+        where: { userId: storeOwner.id }
+    })
+    
     // Retornar al FrontEnd la URL a la que debe redirgir para pagar
     return NextResponse.json({ 
       success: true, 
       orderId: orderData.id,
-      paymentUrl: `/${storeOwner.ecommerceSettings?.storeSlug || 'tienda'}/checkout/${orderData.id}` 
+      paymentUrl: `/${settings?.storeSlug || 'tienda'}/checkout/${orderData.id}` 
     }, { status: 200 })
 
   } catch (error: any) {
