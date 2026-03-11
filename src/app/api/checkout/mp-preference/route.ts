@@ -45,7 +45,11 @@ export async function POST(req: Request) {
       unit_price: item.unitPrice
     }))
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    // Construir la URL Base dinámica asegurando el protocolo
+    // Vercel inyecta x-forwarded-host o podemos usar la variable
+    const requestedHost = req.headers.get('x-forwarded-host') || req.headers.get('host')
+    const protocol = requestedHost?.includes('localhost') ? 'http' : 'https'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${requestedHost}`
     // Realizamos una consulta adicional para evitar problemas de Typings cruzados con Prisma JS Client Vercel/Local
     const settings = await prisma.ecommerceSettings.findUnique({
         where: { userId: order.store.id }
