@@ -8,6 +8,9 @@ import { useState, useEffect } from 'react'
 export default function CartPage() {
   const cart = useCartStore()
   const router = useRouter()
+  const items = cart.items
+  const totalItems = items.reduce((total, item) => total + item.quantity, 0)
+  const totalAmount = items.reduce((total, item) => total + item.price * item.quantity, 0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   // Basic Form State (En un caso real se usaría React Hook Form)
@@ -53,8 +56,8 @@ export default function CartPage() {
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify({
            customer: formData,
-           items: cart.items,
-           totalAmount: cart.totalAmount
+           items: items,
+           totalAmount: totalAmount
          })
        })
        
@@ -160,8 +163,8 @@ export default function CartPage() {
 
               <div className="border-t border-slate-100 pt-6 space-y-3 mb-6">
                  <div className="flex justify-between text-slate-500">
-                    <span>Subtotal ({cart.totalItems} items)</span>
-                    <span>${cart.totalAmount.toLocaleString('es-CL')}</span>
+                    <span>Subtotal ({totalItems} items)</span>
+                    <span>${totalAmount.toLocaleString('es-CL')}</span>
                  </div>
                  <div className="flex justify-between text-slate-500">
                     <span>Envío</span>
@@ -169,7 +172,7 @@ export default function CartPage() {
                  </div>
                  <div className="flex justify-between text-xl font-black text-slate-900 pt-3 border-t border-slate-100">
                     <span>Total a Pagar</span>
-                    <span className="text-blue-600">${cart.totalAmount.toLocaleString('es-CL')}</span>
+                    <span className="text-blue-600">${totalAmount.toLocaleString('es-CL')}</span>
                  </div>
               </div>
 

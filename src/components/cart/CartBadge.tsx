@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react'
 
 export function CartBadge() {
   const [mounted, setMounted] = useState(false)
-  const totalItems = useCartStore(state => state.totalItems)
+  const items = useCartStore(state => state.items)
+  const totalItems = items.reduce((total, item) => total + item.quantity, 0)
 
   useEffect(() => {
     setMounted(true)
