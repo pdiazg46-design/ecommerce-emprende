@@ -11,9 +11,10 @@ export async function POST(req: Request) {
     }
 
     // El StoreId actualmente en la demo será el primer Admin Owner del proyecto EMPRENDE
-    // ya que este E-Commerce es una tienda única. En multi-tenant lo pasaríamos en el payload.
+    // ya que este E-Commerce es una tienda única.
     const storeOwner = await prisma.user.findFirst({
-        where: { role: 'ADMIN' }
+        where: { role: 'ADMIN' },
+        include: { ecommerceSettings: true }
     })
     
     if(!storeOwner) {
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
         }
       }
 
-      // 2. Crear la Orden (EcommerceOrder)
+      // 2. Crear la Orden (EcommerceOrder) en estado PENDIENTE DE PAGO
       const newOrder = await tx.ecommerceOrder.create({
         data: {
           storeId: storeOwner.id,
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
           customerPhone: customer.phone,
           shippingAddress: customer.address,
           totalAmount: totalAmount,
-          status: 'PENDING', // PENDIENTE DE PAGO FICTICIO
+          status: 'PENDING_PAYMENT', // <-- Ahora nace en pendiente de pago
           items: {
             create: items.map((item: any) => ({
               productId: item.id,
@@ -54,22 +55,19 @@ export async function POST(req: Request) {
         }
       })
 
-      // 3. Descontar el Stock ONLINE (El Realtime de Emprende escuchará esto)
-      for (const item of items) {
-        await tx.product.update({
-          where: { id: item.id },
-          data: {
-            stockEcommerce: {
-              decrement: item.quantity
-            }
-          }
-        })
-      }
+      // 3. Ya NO descontamos el inventario aquí. El inventario se descontará
+      // cuando el webhook de MercadoPago o el Administrador confirme el pago (Pase a PAID).
+      // Por ahora, solo retornamos la orden para iniciar el pago.
 
       return newOrder
     })
 
-    return NextResponse.json({ success: true, orderId: orderData.id }, { status: 200 })
+    // Retornar al FrontEnd la URL a la que debe redirgir para pagar
+    return NextResponse.json({ 
+      success: true, 
+      orderId: orderData.id,
+      paymentUrl: `/${storeOwner.ecommerceSettings?.storeSlug || 'tienda'}/checkout/${orderData.id}` 
+    }, { status: 200 })
 
   } catch (error: any) {
     console.error('Checkout Error:', error)

@@ -92,10 +92,18 @@ export default function CartPage() {
        })
        
        if (response.ok) {
-         // Vaciar carro y mostrar éxito
+         const data = await response.json()
+         
+         // Vaciar carro antes de salir
          cart.clearCart()
-         alert("¡Pedido realizado con éxito! En breve te contactaremos.") // Simplificado para la beta
-         router.push(`/${storeSlug}`)
+         
+         // Redirigir a la URL Segura de Pagos
+         if(data.paymentUrl) {
+           router.push(data.paymentUrl)
+         } else {
+           // Fallback histórico
+           router.push(`/${storeSlug}`)
+         }
        } else {
          const err = await response.json()
          alert(err.error || "Hubo un error al procesar tu pedido.")

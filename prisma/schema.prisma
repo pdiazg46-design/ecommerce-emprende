@@ -116,6 +116,8 @@ model EcommerceOrder {
   status          String  @default("PENDING")
   totalAmount     Int
   paymentId       String?
+  courierName     String? // Empresa de Despacho (Ej. Starken, Chilexpress)
+  trackingNumber  String? // Número de Seguimiento
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
