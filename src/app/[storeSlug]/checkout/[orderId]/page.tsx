@@ -112,39 +112,39 @@ export default async function CheckoutPaymentPage(props: {
   const waRef = `https://wa.me/${cleanPhone}?text=Hola!%20Acabo%20de%20reservar%20el%20pedido%20${order.id.slice(-6).toUpperCase()}%20por%20$${order.totalAmount.toLocaleString('es-CL')}.%20Quería%20coordinar%20el%20pago%20con%20tarjeta.`;
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-slate-50 py-6 px-4 sm:px-6">
       <div className="max-w-2xl mx-auto">
-        <Link href={`/${resolvedParams.storeSlug}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium mb-8 transition group">
-           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 group-hover:-translate-x-1 transition-transform">
+        <Link href={`/${resolvedParams.storeSlug}`} className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 text-sm font-medium mb-4 transition group">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 group-hover:-translate-x-1 transition-transform">
              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
            </svg>
            Regresar a la Tienda
         </Link>
-        <div className="text-center mb-10">
-          <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
+        <div className="text-center mb-6">
+          <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7">
                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
              </svg>
           </div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">¡Tu reserva fue exitosa!</h1>
-          <p className="text-slate-600 font-medium">Orden <span className="text-slate-900 font-bold uppercase">#{order.id.slice(-6)}</span> reservada bajo: {order.customerName}</p>
+          <h1 className="text-2xl font-black text-slate-900 mb-1">¡Tu reserva fue exitosa!</h1>
+          <p className="text-sm text-slate-600 font-medium">Orden <span className="text-slate-900 font-bold uppercase">#{order.id.slice(-6)}</span> reservada bajo: {order.customerName}</p>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 mb-8">
-           <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-             <span className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">1</span>
+        <div className="bg-white rounded-[1.5rem] p-5 sm:p-6 shadow-sm border border-slate-200 mb-4">
+           <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+             <span className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">1</span>
              Resumen a Pagar
            </h2>
            
-           <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex justify-between items-center mb-8">
+           <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex justify-between items-center mb-6">
               <div>
-                 <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Monto Total</p>
-                 <p className="text-4xl font-black text-slate-900">${order.totalAmount.toLocaleString('es-CL')}</p>
+                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Monto Total</p>
+                 <p className="text-3xl font-black text-slate-900">${order.totalAmount.toLocaleString('es-CL')}</p>
               </div>
            </div>
 
-           <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-             <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">2</span>
+           <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+             <span className="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs">2</span>
              Realizar Pago Seguro
            </h2>
 
@@ -165,39 +165,38 @@ export default async function CheckoutPaymentPage(props: {
               </div>
            ) : (
               <div className="space-y-4">
-                 <p className="text-sm text-slate-600 font-medium mb-4">
-                    Selecciona tu medio de pago. Toda la transacción será procesada bajo estrictos estándares de seguridad bancaria externa. Jamás compartiremos ni almacenaremos los datos de tus tarjetas.
-                 </p>
+                  <p className="text-xs text-slate-600 font-medium mb-4 leading-relaxed">
+                     Selecciona tu medio de pago. Transacción procesada bajo estándares de seguridad externa. No almacenaremos datos de tus tarjetas.
+                  </p>
 
-                 {storeSettings.user.acceptsMercadoPago && (
-                    <MercadoPagoButton orderId={order.id} />
-                 )}
+                  {storeSettings.user.acceptsMercadoPago && (
+                     <MercadoPagoButton orderId={order.id} />
+                  )}
 
-                 {storeSettings.user.useSumUp && (
-                     <button disabled className="w-full flex items-center justify-between p-4 rounded-2xl border-2 border-slate-200 opacity-60 cursor-not-allowed group">
-                       <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
-                             <div className="font-black text-slate-800 tracking-tighter">sumup.</div>
-                          </div>
-                          <div className="text-left">
-                             <h4 className="font-bold text-slate-900 group-hover:text-blue-600 transition">SumUp (Proximamente)</h4>
-                             <p className="text-xs text-slate-500">Checkout Seguro con Tarjetas</p>
-                          </div>
-                       </div>
-                    </button>
-                 )}
-                 
-                 {/* Temporary fallback for the demo until API integrations are complete */}
-                 <div className="pt-6 border-t border-slate-100">
-                    <a 
-                       href={waRef}
-                       target="_blank"  
-                       className="w-full block text-center bg-slate-900 shadow-xl shadow-slate-900/20 hover:scale-[1.02] text-white font-bold py-4 px-4 rounded-2xl transition-all"
-                    >
-                       Coordinar Pago Directo con la Tienda
-                    </a>
-                 </div>
-              </div>
+                  {storeSettings.user.useSumUp && (
+                      <button disabled className="w-full flex items-center justify-between p-3 rounded-xl border-2 border-slate-200 opacity-60 cursor-not-allowed group">
+                        <div className="flex items-center gap-3">
+                           <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+                              <div className="text-xs font-black text-slate-800 tracking-tighter">sumup.</div>
+                           </div>
+                           <div className="text-left">
+                              <h4 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition">SumUp (Proximamente)</h4>
+                              <p className="text-[10px] text-slate-500">Checkout Seguro con Tarjetas</p>
+                           </div>
+                        </div>
+                     </button>
+                  )}
+                  
+                  {/* Temporary fallback for the demo until API integrations are complete */}
+                  <div className="pt-4 mt-2 border-t border-slate-100">
+                     <a 
+                        href={waRef}
+                        target="_blank"  
+                        className="w-full block text-center bg-slate-900 shadow-xl shadow-slate-900/20 hover:scale-[1.02] text-white text-sm font-bold py-3 px-4 rounded-xl transition-all"
+                     >
+                        Coordinar Pago Directo con la Tienda
+                     </a>
+                  </div>            </div>
            )}
         </div>
       </div>
