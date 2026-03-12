@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     // Actually, `getUserById` might fail if IDs differ (CUID vs UUID). 
     // It's safer to generate a Magic Link by email. Supabase requires the user to exist by email.
     // Let's generate a magic link.
-        const siteUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://ecommerce-emprende.vercel.app';
+        const siteUrl = 'https://ecommerce-emprende.vercel.app';
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: 'magiclink',
             email: email,
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
              })
              
              // Volvemos a intentar generar el link
-             const siteUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://ecommerce-emprende.vercel.app';
+             const siteUrl = 'https://ecommerce-emprende.vercel.app';
              const { data: retryData, error: retryError } = await supabaseAdmin.auth.admin.generateLink({
                 type: 'magiclink',
                 email: email,
