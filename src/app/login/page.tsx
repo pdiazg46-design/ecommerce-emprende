@@ -47,13 +47,13 @@ export default function LoginPage() {
     setError(null)
     setSuccessMsg(null)
 
-    // baseUrl as fallback for redirect
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+    // Forzando el dominio de producción seguro para evitar redirecciones a localhost
+    const prodUrl = 'https://e-emprende.vercel.app'
     
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${baseUrl}/admin/catalogo`,
+        emailRedirectTo: `${prodUrl}/admin/catalogo`,
       }
     })
 
