@@ -187,16 +187,7 @@ export default async function CheckoutPaymentPage(props: {
                      </button>
                   )}
                   
-                  {/* Temporary fallback for the demo until API integrations are complete */}
-                  <div className="pt-4 mt-2 border-t border-slate-100">
-                     <a 
-                        href={waRef}
-                        target="_blank"  
-                        className="w-full block text-center bg-slate-900 shadow-xl shadow-slate-900/20 hover:scale-[1.02] text-white text-sm font-bold py-3 px-4 rounded-xl transition-all"
-                     >
-                        Coordinar Pago Directo con la Tienda
-                     </a>
-                  </div>            </div>
+                  {/* Temporary fallback for the demo until API integrations are complete */}            </div>
            )}
         </div>
       </div>
