@@ -53,15 +53,14 @@ export async function GET(req: NextRequest) {
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Ensure the user exists in Supabase. If they don't, we can create them with a random password.
-    // The previous sync logic syncs them, but just in case.
-    const { data: adminUser, error: checkError } = await supabaseAdmin.auth.admin.getUserById(payload.userId)
-    
-    // Actually, `getUserById` might fail if IDs differ (CUID vs UUID). 
-    // It's safer to generate a Magic Link by email. Supabase requires the user to exist by email.
-    // Let's generate a magic link.
+    // Envolvemos todo en un Try-Catch maestro para evitar otro HTTP 500
+    try {
+        // Supabase require UUIDs. Emprende POS usa CUIDs.
+        // EVITAMOS usar getUserById(userId) porque arroja excepcion fatal "Expected parameter to be UUID".
+        
+        // Let's generate a magic link directly by email.
         const siteUrl = 'https://ecommerce-emprende.vercel.app';
-        const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+        let { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: 'magiclink',
             email: email,
             options: {
@@ -105,4 +104,9 @@ export async function GET(req: NextRequest) {
     // Redirect the user to the generated action link which automatically logs them in
     // and then redirects to /admin/ventas setting all the cookies on the way.
     return NextResponse.redirect(new URL(data.properties.action_link))
+
+    } catch (criticalError) {
+        console.error("SSO Critical Execution Error:", criticalError);
+        return NextResponse.redirect(new URL('/login?error=CriticalServerError', req.url))
+    }
 }
