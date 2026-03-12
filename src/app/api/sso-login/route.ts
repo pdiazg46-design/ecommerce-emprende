@@ -57,13 +57,14 @@ export async function GET(req: NextRequest) {
     // Actually, `getUserById` might fail if IDs differ (CUID vs UUID). 
     // It's safer to generate a Magic Link by email. Supabase requires the user to exist by email.
     // Let's generate a magic link.
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-        type: 'magiclink',
-        email: email,
-        options: {
-            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ecommerce-emprende.vercel.app'}/admin/ventas`
-        }
-    })
+        const siteUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://ecommerce-emprende.vercel.app';
+        const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+            type: 'magiclink',
+            email: email,
+            options: {
+                redirectTo: `${siteUrl}/admin/ventas`
+            }
+        })
 
     if (error || !data?.properties?.action_link) {
         console.error("SSO Error linking to Supabase:", error);
@@ -79,11 +80,12 @@ export async function GET(req: NextRequest) {
              })
              
              // Volvemos a intentar generar el link
+             const siteUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://ecommerce-emprende.vercel.app';
              const { data: retryData, error: retryError } = await supabaseAdmin.auth.admin.generateLink({
                 type: 'magiclink',
                 email: email,
                 options: {
-                    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ecommerce-emprende.vercel.app'}/admin/ventas`
+                    redirectTo: `${siteUrl}/admin/ventas`
                 }
              })
 
