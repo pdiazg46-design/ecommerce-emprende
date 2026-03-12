@@ -15,8 +15,6 @@ interface CartState {
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
   clearCart: () => void
-  totalItems: number
-  totalAmount: number
 }
 
 export const useCartStore = create<CartState>()(
@@ -53,14 +51,6 @@ export const useCartStore = create<CartState>()(
       },
       
       clearCart: () => set({ items: [] }),
-      
-      get totalItems() {
-        return get().items.reduce((total, item) => total + item.quantity, 0)
-      },
-      
-      get totalAmount() {
-        return get().items.reduce((total, item) => total + item.price * item.quantity, 0)
-      },
     }),
     {
       name: 'ecommerce-cart-storage',

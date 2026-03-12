@@ -4,14 +4,16 @@ import { useCartStore } from '@/lib/cart-store'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { useStore } from '@/lib/useStore'
 import { REGIONES_CHILE } from '@/lib/chile-data'
 
 export default function CartPage() {
-  const cart = useCartStore()
+  const realStore = useCartStore() // Instancia para acceder a las Acciones
   const router = useRouter()
-  const items = cart.items
-  const totalItems = items.reduce((total, item) => total + item.quantity, 0)
-  const totalAmount = items.reduce((total, item) => total + item.price * item.quantity, 0)
+  const items = useStore(useCartStore, (state) => state.items)
+  
+  const totalItems = items ? items.reduce((total, item) => total + item.quantity, 0) : 0
+  const totalAmount = items ? items.reduce((total, item) => total + item.price * item.quantity, 0) : 0
   const params = useParams()
   // Limpiamos el store slug desde params del router
   const storeSlug = typeof params.storeSlug === 'string' 
@@ -42,27 +44,12 @@ export default function CartPage() {
   const showAddress = formData.region && formData.comuna && hasCoverage;
   const showError = formData.region && formData.comuna && !hasCoverage;
 
-  // Para simular la espera de hidratación o carrito real vacío
-  const [mounted, setMounted] = useState(false)
+  // Eliminado mounted check ya que useStore protege la asimetría SSR
   
-  useEffect(() => {
-    setMounted(true)
-    if (storeSlug) {
-      fetch(`/api/store-info/${storeSlug}`)
-        .then(res => res.json())
-        .then(data => {
-           if (data && data.shippingCoverage) {
-              setShippingCoverage(data.shippingCoverage)
-           }
-        })
-        .catch(err => console.error("Error fetching coverage in cart:", err))
-    }
-  }, [storeSlug])
-
-  if (!mounted) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Cargando carrito...</div>
+  if (!items) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Cargando carrito...</div>
 
   // Si no hay tems, Y NO TAMOS saliendo al Banco, mostramos carrito vacío
-  if (cart.items.length === 0 && !isFinishing) {
+  if (items.length === 0 && !isFinishing) {
     return (
       <div className="min-h-screen bg-slate-50 py-12 px-4">
         <div className="max-w-md mx-auto text-center bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
@@ -102,11 +89,11 @@ export default function CartPage() {
          if(data.paymentUrl) {
            router.push(data.paymentUrl)
            // Limpieza retrasada para dar tiempo a q se cierre la pestaña actual
-           setTimeout(() => cart.clearCart(), 1500)
+           setTimeout(() => realStore.clearCart(), 1500)
          } else {
            // Fallback histórico
            router.push(`/${storeSlug}`)
-           setTimeout(() => cart.clearCart(), 800)
+           setTimeout(() => realStore.clearCart(), 800)
          }
        } else {
          const err = await response.json()
@@ -134,7 +121,7 @@ export default function CartPage() {
            </div>
 
            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
-             {cart.items.map(item => (
+             {items.map(item => (
                 <div key={item.id} className="flex gap-4 items-center py-4 border-b border-slate-100 last:border-0">
                   <div className="w-16 h-16 bg-slate-100 rounded-lg overflow-hidden shrink-0">
                     {item.imageUrl ? (
@@ -149,17 +136,17 @@ export default function CartPage() {
                   </div>
                   <div className="flex items-center space-x-3 bg-slate-50 rounded-lg p-1 border border-slate-200">
                      <button 
-                       onClick={() => cart.updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                       onClick={() => realStore.updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                        className="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-white rounded"
                      >-</button>
                      <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
                      <button 
-                       onClick={() => cart.updateQuantity(item.id, item.quantity + 1)} // En un caso real limitar por stock aquí también
+                       onClick={() => realStore.updateQuantity(item.id, item.quantity + 1)} // En un caso real limitar por stock aquí también
                        className="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-white rounded"
                      >+</button>
                   </div>
                   <button 
-                    onClick={() => cart.removeItem(item.id)}
+                    onClick={() => realStore.removeItem(item.id)}
                     className="p-2 text-rose-400 hover:bg-rose-50 rounded-lg transition"
                   >
                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
