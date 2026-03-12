@@ -42,7 +42,7 @@ El ecosistema hace un uso rudo de **App Router** (`src/app/`):
 El estado del carrito vive en el navegador local del cliente usando `zustand/middleware persist`. Si un cliente compra en `/tienda-a` y luego visita `/tienda-b`, sus datos no pueden mezclarse.
 - **Lógica de Protección:** `src/lib/cart-store.ts` maneja la variable `currentStoreSlug`. 
 - Si un cliente llama al método `addItem()` e intenta enviar al carrito un elemento proveniente de un `storeSlug` distinto al que ya existía anclado a su sesión actual en Zustand, **el Carrito se purgará automáticamente (borrón y cuenta nueva)**. Es un blindaje arquitectónico "Data Leak Prevention" del SaaS.
-- El componente flotante de icono de total (`CartBadge.tsx`) está rediseñado para reaccionar mediante cálculo puro de elementos activos con un `.reduce`.
+- **Guardia de Hidratación (CSR vs SSR)**: Next.js Node (Server) y el Browser (Client) pelearán por el estado inicial si se lee Zustand crudo desde LocalStorage ("Amnesia del Carrito"). Todos los renders de ítems deben envolverse obligatoriamente en la capa asíncrona protectora invocando `const items = useStore(useCartStore, state => state.items)`. Queda terminantemente prohibido usar getters literales.
 
 ## 🎨 Principios UX y de Interfaz
 
@@ -53,6 +53,18 @@ El estado del carrito vive en el navegador local del cliente usando `zustand/mid
    - Todas las páginas públicas poseen, antes del cierre de capa, un Footer Institucional promoviendo al padre tecnológico del SaaS: **"Powered by AT-SIT"** apuntando a `atsittelecom@gmail.com`.
 3. **Imágenes Multi-Nube (Supabase Storage)**:
    - El panel de configuración `BrandConfig.tsx` utiliza componentes de file-upload para evadir inputs de texto duros al subir imágenes de logo. Sube y reescribe URLs efímeras con políticas públicas hacia Supabase Buckets.
+
+## 🏦 Arquitectura Financiera: El Trípode Transaccional
+
+El ecosistema E-commerce funciona como un brazo extendido de la aplicación matriz "**Emprende POS**". La integridad contable es sagrada (Eventual Consistency):
+- Cuando el Webhook o Frontend detecta un pago exitoso desde Mercado Pago (Ej: `status === 'PAID'`), el endpoint `/api/admin/orders` ejecuta una Transacción Atómica.
+- Inmediatamente descuenta el Inventario y despacha internamente una nueva `Transaction` tipificada nativamente como `WEB_SALE` directamente al balance del negocio en Emprende, alimentando así sus gráficos, inteligencia analítica y formularios F29 automáticos como si fuese un ticket de caja física.
+
+## 🔐 Autenticación y Despliegue de Identidades B2B (Magic Link)
+
+El E-commerce es un subdominio de **Alta Bóveda Bancaria**. No comparte la misma red de contraseñas de bcrypt (`public.User`) que usan libremente los colaboradores del Punto de Venta general. Utiliza las tablas selladas de Vercel y `auth.users` (Supabase Nativo).
+- Si un Vendedor secunadario o nuevo comercio ingresa sus credenciales de Emprende POS y el E-commerce arroja **"Invalid Login Credentials"**, significa que su identidad antigua no ha sido propagada a las capas seguras.
+- **Onboarding Oficial B2B**: En lugar de migraciones masivas de contraseñas, el conducto oficial es presionar el botón de **"Recibir Enlace Automático" (Magic Link)** en el portal de `/login`. Al autorizar vía email (`signInWithOtp`), el E-Commerce fuerza un by-pass seguro fusionando ambas bases de vida, otorgándole acceso a las profundidades del SaaS.
 
 ## 🚀 Despliegue y Base de Datos
 

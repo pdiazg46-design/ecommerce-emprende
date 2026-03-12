@@ -21,17 +21,52 @@ export default function LoginPage() {
     setError(null)
     setSuccessMsg(null)
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    // Primer intento: Tratar como un usuario que ya existe en el E-commerce (Supabase Auth)
+    let { data, error: supaError } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    if (error) {
-      console.error('[DIAGNÓSTICO SUPABASE] Error completo:', error)
-      setError(`Error: ${error.message} (Si olvidaste tu clave, usa el acceso automático)`)
+    // Si la contraseña falla O el usuario no existe en la Bóveda Nueva, invocaremos a la API "Puente"
+    if (supaError) {
+      console.log('[DIAGNÓSTICO HÍBRIDO] Falló inicio nativo. Intentando sincronizar clave con Emprende POS...')
+      setSuccessMsg('Sincronizando la billetera de identidades...')
+      
+      try {
+        const syncRes = await fetch('/api/auth/sync-legacy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
+
+        const syncData = await syncRes.json()
+
+        if (syncRes.ok && syncData.success) {
+           console.log('[DIAGNÓSTICO HÍBRIDO] Identidad sincronizada con éxito. Reintentando Login silencioso...')
+           setSuccessMsg('Verificando acceso unificado...')
+           // Segundo intento: Ahora que la API insertó/actualizó a la persona en Supabase con su clave del POS...
+           const retry = await supabase.auth.signInWithPassword({ email, password })
+           data = retry.data
+           supaError = retry.error
+        } else {
+           // Era una clave equivocada en verdad
+           throw new Error(syncData.error || 'Clave de Emprende POS incorrecta')
+        }
+      } catch (err: any) {
+         setError(`Acceso Denegado: ${err.message}. Si olvidaste tu clave, presiona Enviar Enlace abajo.`)
+         setSuccessMsg(null)
+         setIsLoading(false)
+         return
+      }
+    }
+
+    // Evaluación Final del Acceso
+    if (supaError) {
+      setError(`Error Maestro: ${supaError.message}`)
+      setSuccessMsg(null)
       setIsLoading(false)
     } else {
-      console.log('[DIAGNÓSTICO SUPABASE] Éxito:', data)
+      console.log('[DIAGNÓSTICO BÓVEDA] Éxito:', data)
       router.push('/admin/catalogo')
       router.refresh()
     }
