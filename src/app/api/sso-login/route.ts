@@ -6,13 +6,16 @@ const algorithm = 'aes-256-cbc'
 
 function decryptToken(encryptedToken: string): any {
     try {
-        const secretKey = process.env.NEXTAUTH_SECRET || 'fallback-secret-key-that-is-at-least-32-chars';
-        const key = crypto.createHash('sha256').update(String(secretKey)).digest('base64').substring(0, 32);
+        const secretKey = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'fallback-secret-key-that-is-at-least-32-chars';
+        
+        // Crear un Hash Base64 de la llave secreta para forzar 32 bytes exactos (Debe ser idéntico al Emisor Hexagonal)
+        const hashStr = crypto.createHash('sha256').update(String(secretKey)).digest('hex').substring(0, 32);
+        const keyBuffer = Buffer.from(hashStr, 'utf8');
         
         const textParts = encryptedToken.split(':');
         const iv = Buffer.from(textParts.shift()!, 'hex');
         const encryptedText = Buffer.from(textParts.join(':'), 'hex');
-        const decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
+        const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
         
         let decrypted = decipher.update(encryptedText);
         decrypted = Buffer.concat([decrypted, decipher.final()]);
