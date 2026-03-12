@@ -23,6 +23,7 @@ model User {
   subscriptionStatus String             @default("TRIAL")
   subscriptionPlan   String             @default("BASIC")
   f29Active          Boolean            @default(false)
+  ecommerceActive    Boolean            @default(false)
   ppmRate            Float              @default(1.0)
   mpPreapprovalId    String?
   nextPaymentDate    DateTime?          @default(now())

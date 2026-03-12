@@ -1,107 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase-client'
-
 export default function LoginPage() {
-  const router = useRouter()
-  const supabase = createClient()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [successMsg, setSuccessMsg] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isRecovering, setIsRecovering] = useState(false)
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
-    setSuccessMsg(null)
-
-    // Primer intento: Tratar como un usuario que ya existe en el E-commerce (Supabase Auth)
-    let { data, error: supaError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    // Si la contraseña falla O el usuario no existe en la Bóveda Nueva, invocaremos a la API "Puente"
-    if (supaError) {
-      console.log('[DIAGNÓSTICO HÍBRIDO] Falló inicio nativo. Intentando sincronizar clave con Emprende POS...')
-      setSuccessMsg('Sincronizando la billetera de identidades...')
-      
-      try {
-        const syncRes = await fetch('/api/auth/sync-legacy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        })
-
-        const syncData = await syncRes.json()
-
-        if (syncRes.ok && syncData.success) {
-           console.log('[DIAGNÓSTICO HÍBRIDO] Identidad sincronizada con éxito. Reintentando Login silencioso...')
-           setSuccessMsg('Verificando acceso unificado...')
-           // Segundo intento: Ahora que la API insertó/actualizó a la persona en Supabase con su clave del POS...
-           const retry = await supabase.auth.signInWithPassword({ email, password })
-           data = retry.data
-           supaError = retry.error
-        } else {
-           // Era una clave equivocada en verdad
-           throw new Error(syncData.error || 'Clave de Emprende POS incorrecta')
-        }
-      } catch (err: any) {
-         setError(`Acceso Denegado: ${err.message}. Si olvidaste tu clave, presiona Enviar Enlace abajo.`)
-         setSuccessMsg(null)
-         setIsLoading(false)
-         return
-      }
-    }
-
-    // Evaluación Final del Acceso
-    if (supaError) {
-      setError(`Error Maestro: ${supaError.message}`)
-      setSuccessMsg(null)
-      setIsLoading(false)
-    } else {
-      console.log('[DIAGNÓSTICO BÓVEDA] Éxito:', data)
-      router.push('/admin/catalogo')
-      router.refresh()
-    }
-  }
-
-  const handleMagicLink = async () => {
-    if (!email) {
-      setError('Por favor, ingresa tu correo electrónico arriba para enviarte el enlace.')
-      return
-    }
-    
-    setIsRecovering(true)
-    setError(null)
-    setSuccessMsg(null)
-
-    // Forzando el dominio de producción seguro para evitar redirecciones a localhost
-    const prodUrl = 'https://ecommerce-emprende.vercel.app'
-    
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${prodUrl}/admin/catalogo`,
-      }
-    })
-
-    if (error) {
-       console.error("Error Magic Link:", error)
-       setError(`No pudimos enviar el enlace: ${error.message}`)
-    } else {
-       setSuccessMsg(`¡Enlace enviado! Revisa tu bandeja de entrada en ${email} e ingresa con un clic.`)
-    }
-    
-    setIsRecovering(false)
-  }
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -113,111 +12,30 @@ export default function LoginPage() {
            </svg>
         </div>
 
-        <h2 className="text-center text-2xl font-black text-slate-900 tracking-tight">
-          Acceso Administrador
+        <h2 className="text-center text-3xl font-black text-slate-900 tracking-tight mb-2">
+          Acceso Restringido
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-500 font-medium">
-          Identifícate con tus credenciales de Emprende POS
-        </p>
-      </div>
+        
+        <div className="bg-white py-8 px-6 shadow-xl shadow-slate-200/50 sm:rounded-3xl border border-slate-100 relative overflow-hidden text-center mt-8">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            
+            <p className="text-slate-600 font-medium mb-6">
+                El panel de administración del E-commerce ahora es un módulo exclusivo del ecosistema <strong>Emprende POS</strong>.
+            </p>
+            <p className="text-sm text-slate-500 mb-8">
+                Para gestionar tu tienda, inventario y ventas online, debes iniciar sesión desde tu terminal principal y acceder a través del menú lateral.
+            </p>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-3xl sm:px-10 border border-slate-100 relative overflow-hidden">
-          
-          {/* Glass Decorator */}
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
-
-          <form className="space-y-6" onSubmit={handleLogin}>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700">Email</label>
-              <div className="mt-1 relative">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="admin@emprende.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-700">Contraseña</label>
-              <div className="mt-1 relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-10"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-500 transition-colors"
-                >
-                  {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 p-3 rounded-lg border border-red-100 flex gap-2 items-center text-red-600 text-sm font-medium">
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 flex-shrink-0">
-                   <path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clipRule="evenodd" />
-                 </svg>
-                {error}
-              </div>
-            )}
-
-            {successMsg && (
-              <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100 flex gap-2 items-center text-emerald-700 text-sm font-medium">
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 flex-shrink-0">
-                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                 </svg>
-                {successMsg}
-              </div>
-            )}
-
-            <div className="space-y-3">
-              <button
-                type="submit"
-                disabled={isLoading || isRecovering}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all active:scale-[0.98] disabled:opacity-70"
-              >
-                {isLoading ? 'Iniciando sesión...' : 'Ingresar'}
-              </button>
-
-              <div className="relative flex items-center py-2">
-                <div className="flex-grow border-t border-slate-200"></div>
-                <span className="flex-shrink-0 mx-4 text-slate-400 text-xs font-semibold uppercase tracking-wider">O recupera acceso</span>
-                <div className="flex-grow border-t border-slate-200"></div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleMagicLink}
-                disabled={isLoading || isRecovering}
-                className="w-full flex justify-center py-3 px-4 border-2 border-slate-200 rounded-xl shadow-sm text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 transition-all active:scale-[0.98] disabled:opacity-70 group"
-              >
-                {isRecovering ? 'Enviando enlace...' : 'Recibir Enlace de Acceso Automático'}
-              </button>
-            </div>
-          </form>
+            <a
+                href={process.env.NEXT_PUBLIC_POS_URL || "http://localhost:3000"}
+                className="w-full inline-flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all active:scale-[0.98]"
+            >
+                Ir a Emprende POS
+            </a>
         </div>
-        <p className="text-center text-xs text-slate-400 mt-6 font-medium">
-          Sistema Híbrido Protegido • Emprende E-Commerce
+        
+        <p className="text-center text-xs text-slate-400 mt-8 font-medium">
+          Sistema Híbrido Protegido • Ecosistema Emprende
         </p>
       </div>
     </div>
