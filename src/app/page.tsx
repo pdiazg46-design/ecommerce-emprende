@@ -53,7 +53,7 @@ export default async function Home() {
             <p className="text-slate-500 max-w-sm mx-auto mt-1">Actualmente no tenemos productos publicados con stock en la web. Vuelve más tarde.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6">
             {products.map((product) => (
               <Link 
                 href={`/productos/${product.slug || product.id}`} 
