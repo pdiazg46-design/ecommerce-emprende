@@ -3,15 +3,15 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { createClient } from '@supabase/supabase-js'
 
-// Inicializamos cliente administrador asíncrono con poderes absolutos (Bypass RLS/Auth)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
-
 export async function POST(req: Request) {
   try {
+    // Inicializamos cliente administrador asíncrono con poderes absolutos (Bypass RLS/Auth)
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+
     const { email, password } = await req.json()
 
     if (!email || !password) {
