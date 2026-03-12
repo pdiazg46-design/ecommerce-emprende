@@ -27,7 +27,7 @@ export default function LoginPage() {
             </p>
 
             <a
-                href={process.env.NEXT_PUBLIC_POS_URL || "http://localhost:3000"}
+                href={process.env.NEXT_PUBLIC_POS_URL || "https://emprende-atsit.vercel.app"}
                 className="w-full inline-flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all active:scale-[0.98]"
             >
                 Ir a Emprende POS
