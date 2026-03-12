@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
         type: 'magiclink',
         email: email,
         options: {
-            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/admin/ventas`
+            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ecommerce-emprende.vercel.app'}/admin/ventas`
         }
     })
 
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
                 type: 'magiclink',
                 email: email,
                 options: {
-                    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/admin/ventas`
+                    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ecommerce-emprende.vercel.app'}/admin/ventas`
                 }
              })
 
