@@ -48,7 +48,7 @@ export default function LoginPage() {
     setSuccessMsg(null)
 
     // Forzando el dominio de producción seguro para evitar redirecciones a localhost
-    const prodUrl = 'https://e-emprende.vercel.app'
+    const prodUrl = 'https://ecommerce-emprende.vercel.app'
     
     const { error } = await supabase.auth.signInWithOtp({
       email,
