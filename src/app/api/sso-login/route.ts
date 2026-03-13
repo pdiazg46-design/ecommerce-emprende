@@ -105,8 +105,13 @@ export async function GET(req: NextRequest) {
     // and then redirects to /admin/ventas setting all the cookies on the way.
     return NextResponse.redirect(new URL(data.properties.action_link))
 
-    } catch (criticalError) {
+    } catch (criticalError: any) {
         console.error("SSO Critical Execution Error:", criticalError);
-        return NextResponse.redirect(new URL('/login?error=CriticalServerError', req.url))
+        return NextResponse.json({ 
+            success: false, 
+            error_message: criticalError?.message || String(criticalError),
+            stack: criticalError?.stack,
+            type: "Fatal SSO Crash"
+        }, { status: 500 });
     }
 }

@@ -1,6 +1,47 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
+
 export default function LoginPage() {
+  const router = useRouter()
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
+
+  useEffect(() => {
+    // El Magic Link de Supabase pone el token en el Hash de la URL, 
+    // lo cual el servidor (Render) no puede ver, pero el cliente sí.
+    if (typeof window !== 'undefined' && window.location.hash.includes('access_token')) {
+        setIsAuthenticating(true)
+        
+        const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+
+        // Escuchar el evento cuando el SDK atrapa el hash de la URL y consolida la cookie
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || session) {
+                // Ya tenemos sesión viva web, entramos al centro de control
+                router.push('/admin/ventas')
+                router.refresh()
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }
+  }, [router])
+
+  if (isAuthenticating) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-10">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+            <h2 className="text-xl font-black text-slate-900 animate-pulse">Sincronizando Identidad Segura...</h2>
+            <p className="text-slate-500 mt-2">Estableciendo enlace con The Cloud</p>
+        </div>
+      )
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
