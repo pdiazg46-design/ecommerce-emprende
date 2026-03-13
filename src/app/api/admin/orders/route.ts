@@ -43,9 +43,9 @@ export async function GET() {
 
     return NextResponse.json({ orders })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error GET orders:', error)
-    return NextResponse.json({ error: 'Error al obtener pedidos' }, { status: 500 })
+    return NextResponse.json({ error: 'Error Interno Base de Datos: ' + (error.message || String(error)) }, { status: 500 })
   }
 }
 
