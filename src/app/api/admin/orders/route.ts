@@ -138,7 +138,7 @@ export async function PATCH(req: Request) {
                  taxDocumentType: 'BOLETA', // Asumido por defecto SaaS
                  amount: updatedOrder.totalAmount, // El monto real de la venta
                  quantity: 1, // 1 canasta
-                 description: `Venta E-Commerce #${updatedOrder.id.slice(-6).toUpperCase()} (${updatedOrder.customerName})`,
+                 description: `Venta E-Commerce #${updatedOrder.id.slice(-6).toUpperCase()} (${updatedOrder.customerName}) - ${updatedOrder.items.map(it => `${it.quantity}x ${it.product?.name || 'Producto Removido'}`).join(', ')}`,
                  date: new Date()
               }
            })

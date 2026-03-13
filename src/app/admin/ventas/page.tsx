@@ -204,7 +204,12 @@ export default function AdminVentas() {
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
                            {new Date(order.createdAt).toLocaleDateString('es-CL')} - {new Date(order.createdAt).toLocaleTimeString('es-CL', {hour: '2-digit', minute:'2-digit'})}
                         </span>
-                        <h3 className="font-black text-slate-900 text-lg leading-tight">{order.customerName}</h3>
+                        <h3 className="font-black text-slate-900 text-lg leading-tight flex items-center gap-2">
+                           {order.customerName}
+                           <span className="text-xs font-bold text-slate-500 bg-slate-200/60 px-2 py-0.5 rounded border border-slate-300">
+                             #{order.id.slice(-6).toUpperCase()}
+                           </span>
+                        </h3>
                         <p className="text-sm font-medium text-slate-600 truncate">{order.customerEmail}</p>
                      </div>
                      <div>
