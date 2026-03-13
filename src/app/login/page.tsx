@@ -21,31 +21,31 @@ export default function LoginPage() {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
 
-        // Forzar extracción explícita del Hash
-        supabase.auth.getSession().then(({ data, error }) => {
-            if (error) {
-                setAuthError("No se pudo validar el enlace. Razón: " + error.message)
-                setIsAuthenticating(false)
-            } else if (data.session) {
-                // Hard-reload forzado para que el Middleware recoja la Cookie y la propague al Servidor
-                window.location.href = '/admin/ventas'
-            } else {
-                setAuthError("La sesión no pudo ser establecida. El enlace podría estar vencido o caducado tras 1 uso.")
-                setIsAuthenticating(false)
-            }
-        }).catch(err => {
-            setAuthError("Error Grave Front-End: " + String(err))
-            setIsAuthenticating(false)
-        })
+        // Forzar extracción explícita y manual del Hash de la URL
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
 
-        // Escuchar el evento cuando el SDK atrapa el hash de la URL y consolida la cookie
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || session) {
-                window.location.href = '/admin/ventas'
-            }
-        })
-
-        return () => subscription.unsubscribe()
+        if (accessToken && refreshToken) {
+            supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+            }).then(({ error }) => {
+                if (error) {
+                    setAuthError("Fallo interno al inyectar tu llave de acceso: " + error.message);
+                    setIsAuthenticating(false);
+                } else {
+                    // Hard-reload forzado para que el Middleware de servidor procese la nueva Cookie 
+                    window.location.href = '/admin/ventas';
+                }
+            }).catch(err => {
+                setAuthError("Error Crítico de inyección: " + String(err));
+                setIsAuthenticating(false);
+            });
+        } else {
+            setAuthError("La llave de acceso está corrupta o incompleta en la URL.");
+            setIsAuthenticating(false);
+        }
     }
   }, [router])
 
