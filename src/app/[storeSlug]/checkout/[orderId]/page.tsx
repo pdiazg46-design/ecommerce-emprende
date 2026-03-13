@@ -187,7 +187,25 @@ export default async function CheckoutPaymentPage(props: {
                      </button>
                   )}
                   
-                  {/* Temporary fallback for the demo until API integrations are complete */}            </div>
+                  {/* Botón de Pruebas / Transferencia Manual By-Pass */}
+                  <div className="mt-6 pt-4 border-t border-slate-200">
+                      <p className="text-xs font-bold text-slate-400 mb-3 text-center uppercase tracking-wider">Otras Opciones</p>
+                      
+                      <button
+                         onClick={async () => {
+                             // Simulamos que el banco aprobó la transferencia y nos devolvió a la url de éxito
+                             window.location.href = `/${resolvedParams.storeSlug}/checkout/${order.id}?status=approved&payment_id=test_transfer_123`
+                         }}
+                         className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold transition shadow-sm border border-slate-300 active:scale-[0.98]"
+                      >
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 opacity-70"><path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" /></svg>
+                         Aviso de Transferencia Manual (Probar Venta)
+                      </button>
+                      <p className="text-[10px] text-center text-slate-400 mt-2 px-4">
+                        Este botón permite completar el ciclo de compra sin tarjeta de crédito. Usar para confirmar el rebaje de stock automático en el módulo de ventas.
+                      </p>
+                  </div>
+              </div>
            )}
         </div>
       </div>
