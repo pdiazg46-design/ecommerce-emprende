@@ -24,6 +24,12 @@ model User {
   subscriptionPlan   String             @default("BASIC")
   f29Active          Boolean            @default(false)
   ecommerceActive    Boolean            @default(false)
+  
+  // Extensiones POS: Ferias
+  activeFair         String?          
+  activeFairStartedAt DateTime?       
+  knownFairs         String[]         @default([]) 
+
   ppmRate            Float              @default(1.0)
   mpPreapprovalId    String?
   nextPaymentDate    DateTime?          @default(now())
