@@ -63,6 +63,10 @@ export default function AdminVentas() {
            ...(shippingModalData && {
                courierName: shippingModalData.courierName,
                trackingNumber: shippingModalData.trackingNumber
+           }),
+           ...(newStatus === 'PAID' && !shippingModalData && { // Si vuelve a PAID, limpiamos el despacho
+               courierName: null,
+               trackingNumber: null
            })
          })
        })
@@ -77,6 +81,10 @@ export default function AdminVentas() {
                ...(shippingModalData && {
                    courierName: shippingModalData.courierName,
                    trackingNumber: shippingModalData.trackingNumber
+               }),
+               ...(newStatus === 'PAID' && !shippingModalData && {
+                   courierName: null,
+                   trackingNumber: null
                })
              } 
            : o
@@ -90,12 +98,12 @@ export default function AdminVentas() {
   }
 
   const filteredOrders = orders.filter(o => {
-    if (filterStatus === 'ALL') return true
+    if (filterStatus === 'ALL') return o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT'
     return o.status === filterStatus
   })
 
   const stats = { 
-    total: orders.length, 
+    total: orders.filter(o => o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT').length, 
     pending: orders.filter(o => o.status === 'PENDING' || o.status === 'PENDING_PAYMENT').length,
     paid: orders.filter(o => o.status === 'PAID').length,
     sent: orders.filter(o => o.status === 'SENT').length 
@@ -247,10 +255,14 @@ export default function AdminVentas() {
                        <div className="flex gap-2">
                           {['PENDING', 'PENDING_PAYMENT'].includes(order.status) && (
                             <button 
-                              onClick={() => handleStatusChange(order.id, 'PAID')}
-                              className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold shadow-sm transition"
+                              onClick={() => {
+                                 if(window.confirm('🚨 ACCIÓN PELIGROSA\n\n¿Estás absolutamente seguro de que recibiste el dinero correspondiente a este pedido a través de transferencia bancaria directa?\n\nAl presionar "OK", el sistema rebajará el inventario en la Base de Datos central, reportará los impuestos automáticamente a Emprende y preparará la caja para despacho.')){
+                                     handleStatusChange(order.id, 'PAID')
+                                 }
+                              }}
+                              className="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold shadow-sm transition"
                             >
-                              Marcar Pagado
+                              Aprobar Pago Manual
                             </button>
                           )}
                           {order.status === 'PAID' && (
@@ -263,9 +275,21 @@ export default function AdminVentas() {
                             </button>
                           )}
                           {order.status === 'SENT' && (
-                             <div className="text-right">
-                                <span className="block text-xs font-bold text-slate-500 uppercase">Transporte: {order.courierName || 'N/A'}</span>
-                                <span className="block text-sm font-black text-blue-600">Doc: {order.trackingNumber || 'N/A'}</span>
+                             <div className="flex flex-col items-end gap-1">
+                                <div className="text-right">
+                                   <span className="block text-[10px] font-bold text-slate-500 uppercase">Transporte: {order.courierName || 'N/A'}</span>
+                                   <span className="block text-sm font-black text-blue-600">Doc: {order.trackingNumber || 'N/A'}</span>
+                                </div>
+                                <button 
+                                   onClick={() => {
+                                      if(window.confirm('¿Deseas anular el despacho de este paquete y regresarlo al estado "Para Despachar"?\n\nEsto borrará el Courier y número de seguimiento asignado, permitiéndote enviar uno nuevo.')) {
+                                          handleStatusChange(order.id, 'PAID')
+                                      }
+                                   }}
+                                   className="text-[10px] text-red-500 hover:text-red-700 hover:underline font-bold transition-colors"
+                                >
+                                   ❌ Anular Despacho
+                                </button>
                              </div>
                           )}
                        </div>

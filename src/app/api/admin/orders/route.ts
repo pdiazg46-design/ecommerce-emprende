@@ -93,10 +93,10 @@ export async function PATCH(req: Request) {
        }
     }
 
-    // Si la orden pasa a PAID (ya sea desde acá o via webhook a futuro), 
-    // y no estaba previamente PAID (para evitar duplicación), 
-    // registramos la caja en Emprende (Trípode de Ventas)
-    const isTransitioningToPaid = status === 'PAID' && existingOrder.status !== 'PAID'
+    // Si la orden pasa a PAID, SÓLO consideramos que es una transición financiera nueva
+    // si antes estaba en PENDING o PENDING_PAYMENT. De lo contrario (ej. retroceso desde SENT),
+    // NO volvemos a cobrar ni descontar stock.
+    const isTransitioningToPaid = status === 'PAID' && (existingOrder.status === 'PENDING_PAYMENT' || existingOrder.status === 'PENDING')
 
     // Ejecutar Transacción Atómica SÓLO para la consistencia del E-Commerce (Orden & Stock)
     const updatedOrder = await prisma.$transaction(async (tx) => {
