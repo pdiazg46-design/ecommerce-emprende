@@ -253,18 +253,6 @@ export default function AdminVentas() {
                        
                        {/* Control de Acciones basadas en el Estado */}
                        <div className="flex gap-2">
-                          {['PENDING', 'PENDING_PAYMENT'].includes(order.status) && (
-                            <button 
-                              onClick={() => {
-                                 if(window.confirm('🚨 ACCIÓN PELIGROSA\n\n¿Estás absolutamente seguro de que recibiste el dinero correspondiente a este pedido a través de transferencia bancaria directa?\n\nAl presionar "OK", el sistema rebajará el inventario en la Base de Datos central, reportará los impuestos automáticamente a Emprende y preparará la caja para despacho.')){
-                                     handleStatusChange(order.id, 'PAID')
-                                 }
-                              }}
-                              className="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-bold shadow-sm transition"
-                            >
-                              Aprobar Pago Manual
-                            </button>
-                          )}
                           {order.status === 'PAID' && (
                             <button 
                               onClick={() => handleStatusChange(order.id, 'SENT')}
