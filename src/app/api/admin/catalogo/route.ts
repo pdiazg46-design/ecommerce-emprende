@@ -25,7 +25,9 @@ export async function GET() {
 
     const { data: { user } } = await supabase.auth.getUser()
     // Como el middleware está apagado, asegurémonos aquí
-    if (!user && process.env.NODE_ENV === 'production') {
+    const userEmail = user?.email || (process.env.NODE_ENV !== 'production' ? 'pdiazg46@gmail.com' : null);
+    
+    if (!userEmail) {
        return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
@@ -34,8 +36,7 @@ export async function GET() {
       where: {
         isActiveOnline: true,
         user: {
-          // Asumimos el usuario específico como antes
-          email: 'pdiazg46@gmail.com'
+          email: userEmail
         }
       },
       orderBy: {
