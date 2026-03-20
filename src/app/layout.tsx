@@ -7,7 +7,7 @@ import { CartBadge } from '@/components/cart/CartBadge'
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "E-Commerce Emprende",
+  title: "Tienda Emprende",
   description: "La extensión de tienda online para el ecosistema Emprende.",
 }
 

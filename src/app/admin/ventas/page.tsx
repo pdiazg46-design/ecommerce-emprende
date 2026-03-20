@@ -132,7 +132,7 @@ export default function AdminVentas() {
                  <img src="/logo_atsit.png" alt="AT-SIT Integración Tecnológica" className="h-[46px] w-auto object-contain" />
               </div>
               
-              <div className="flex flex-col border-l border-slate-300 dark:border-slate-700 pl-6 cursor-pointer" onClick={() => window.location.href = '/'}>
+              <div className="flex flex-col border-l border-slate-300 dark:border-slate-700 pl-6">
                  <span className="text-2xl font-black tracking-widest text-[#4A87FF] leading-none my-1">EMPRENDE</span>
               </div>
               
