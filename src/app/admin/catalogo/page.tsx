@@ -181,18 +181,19 @@ export default function AdminCatalogo() {
              <div className="text-3xl font-black text-slate-800">{stats.total}</div>
           </button>
           <button 
-             onClick={() => setFilterType('READY')}
-             className={`text-left bg-white p-6 rounded-2xl border shadow-sm border-l-4 border-l-emerald-500 transition-all outline-none ${filterType === 'READY' ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-md transform scale-[1.02]' : 'border-slate-200 hover:border-emerald-300'}`}
-          >
-             <div className="text-emerald-600 text-sm font-semibold mb-1">Listos para Vender</div>
-             <div className="text-3xl font-black text-emerald-600">{stats.withImage}</div>
-          </button>
-          <button 
              onClick={() => setFilterType('ATTENTION')}
              className={`text-left bg-white p-6 rounded-2xl border shadow-sm border-l-4 border-l-amber-500 transition-all outline-none ${filterType === 'ATTENTION' ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-md transform scale-[1.02]' : 'border-slate-200 hover:border-amber-300'}`}
           >
              <div className="text-amber-600 text-sm font-semibold mb-1">Requieren Atención</div>
              <div className="text-3xl font-black text-amber-600">{stats.withoutImage}</div>
+          </button>
+
+          <button 
+             onClick={() => setFilterType('READY')}
+             className={`text-left bg-white p-6 rounded-2xl border shadow-sm border-l-4 border-l-emerald-500 transition-all outline-none ${filterType === 'READY' ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-md transform scale-[1.02]' : 'border-slate-200 hover:border-emerald-300'}`}
+          >
+             <div className="text-emerald-600 text-sm font-semibold mb-1">Listos para Vender</div>
+             <div className="text-3xl font-black text-emerald-600">{stats.withImage}</div>
           </button>
         </div>
 
