@@ -22,7 +22,7 @@ export function BrandConfig() {
   const router = useRouter()
 
   useEffect(() => {
-    fetch('/api/ecommerce-settings')
+    fetch('/api/ecommerce-settings', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         if (!data.error) {
