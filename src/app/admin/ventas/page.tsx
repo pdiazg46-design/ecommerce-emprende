@@ -10,7 +10,7 @@ export default function AdminVentas() {
   const [orders, setOrders] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PAID' | 'SENT'>('ALL')
+  const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PAID' | 'SENT' | 'ARCHIVED'>('ALL')
 
   // Estado del Modal de Despacho
   const [shippingModalData, setShippingModalData] = useState<{ id: string, courierName: string, trackingNumber: string } | null>(null)
@@ -98,15 +98,16 @@ export default function AdminVentas() {
   }
 
   const filteredOrders = orders.filter(o => {
-    if (filterStatus === 'ALL') return o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT'
+    if (filterStatus === 'ALL') return o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT' && o.status !== 'ARCHIVED'
     return o.status === filterStatus
   })
 
   const stats = { 
-    total: orders.filter(o => o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT').length, 
+    total: orders.filter(o => o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT' && o.status !== 'ARCHIVED').length, 
     pending: orders.filter(o => o.status === 'PENDING' || o.status === 'PENDING_PAYMENT').length,
     paid: orders.filter(o => o.status === 'PAID').length,
-    sent: orders.filter(o => o.status === 'SENT').length 
+    sent: orders.filter(o => o.status === 'SENT').length,
+    archived: orders.filter(o => o.status === 'ARCHIVED').length
   }
 
   const getStatusBadge = (status: string) => {
@@ -162,7 +163,7 @@ export default function AdminVentas() {
         </div>
 
         {/* Panel de Estadísticas */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <div className="bg-white p-5 justify-between flex-row flex rounded-xl border border-slate-200 shadow-sm cursor-pointer" onClick={() => setFilterStatus('ALL')}>
              <div>
                 <p className="text-sm font-bold text-slate-500 mb-1">Total Histórico</p>
@@ -181,6 +182,10 @@ export default function AdminVentas() {
           <div className={`bg-blue-50 p-5 rounded-xl border border-blue-200 shadow-sm cursor-pointer transition-transform ${filterStatus === 'SENT' ? 'ring-2 ring-blue-400' : 'hover:-translate-y-1'}`} onClick={() => setFilterStatus('SENT')}>
              <p className="text-sm font-bold text-blue-700 mb-1">Despachados</p>
              <p className="text-3xl font-black text-blue-900">{stats.sent}</p>
+          </div>
+          <div className={`bg-slate-50 p-5 rounded-xl border border-slate-300 shadow-sm cursor-pointer transition-transform ${filterStatus === 'ARCHIVED' ? 'ring-2 ring-slate-400' : 'hover:-translate-y-1'}`} onClick={() => setFilterStatus('ARCHIVED')}>
+             <p className="text-sm font-bold text-slate-500 mb-1">Archivados</p>
+             <p className="text-3xl font-black text-slate-800">{stats.archived}</p>
           </div>
         </div>
 
@@ -202,6 +207,52 @@ export default function AdminVentas() {
              </div>
              <h3 className="text-xl font-bold text-slate-800 mb-2">No hay ventas que mostrar</h3>
              <p className="text-slate-500 border-b border-transparent">Tus clientes aún no han generado pedidos en esta categoría.</p>
+          </div>
+        ) : filterStatus === 'ARCHIVED' ? (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th className="px-4 py-3">Referencia</th>
+                  <th className="px-4 py-3">Cliente</th>
+                  <th className="px-4 py-3">Contenido</th>
+                  <th className="px-4 py-3">Despacho</th>
+                  <th className="px-4 py-3 text-right">Monto</th>
+                  <th className="px-4 py-3 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredOrders.map(order => (
+                  <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3">
+                       <span className="block text-xs font-bold text-slate-800">#{order.id.slice(-6).toUpperCase()}</span>
+                       <span className="block text-[10px] text-slate-400">{new Date(order.createdAt).toLocaleDateString('es-CL')}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                       <span className="block font-bold text-slate-800">{order.customerName}</span>
+                       <span className="block text-xs text-slate-500">{order.customerEmail}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                       <span className="block text-xs text-slate-600 truncate max-w-[200px]" title={order.items.map((it:any) => `${it.quantity}x ${it.product?.name}`).join(', ')}>
+                         {order.items.map((it:any) => `${it.quantity}x ${it.product?.name}`).join(', ')}
+                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                       <span className="block text-xs font-bold text-slate-700">{order.shippingAddress || 'Retiro'}</span>
+                       {order.trackingNumber && <span className="block text-[10px] text-slate-500">{order.courierName}: {order.trackingNumber}</span>}
+                    </td>
+                    <td className="px-4 py-3 text-right font-black text-emerald-600">
+                       ${order.totalAmount.toLocaleString('es-CL')}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                       <button onClick={() => handleStatusChange(order.id, 'SENT')} className="text-[10px] font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded border border-blue-200 transition-colors">
+                          Desarchivar
+                       </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -268,16 +319,24 @@ export default function AdminVentas() {
                                    <span className="block text-[10px] font-bold text-slate-500 uppercase">Transporte: {order.courierName || 'N/A'}</span>
                                    <span className="block text-sm font-black text-blue-600">Doc: {order.trackingNumber || 'N/A'}</span>
                                 </div>
-                                <button 
-                                   onClick={() => {
-                                      if(window.confirm('¿Deseas anular el despacho de este paquete y regresarlo al estado "Para Despachar"?\n\nEsto borrará el Courier y número de seguimiento asignado, permitiéndote enviar uno nuevo.')) {
-                                          handleStatusChange(order.id, 'PAID')
-                                      }
-                                   }}
-                                   className="text-[10px] text-red-500 hover:text-red-700 hover:underline font-bold transition-colors"
-                                >
-                                   ❌ Anular Despacho
-                                </button>
+                                <div className="flex items-center gap-3">
+                                  <button 
+                                     onClick={() => {
+                                        if(window.confirm('¿Deseas anular el despacho de este paquete y regresarlo al estado "Para Despachar"?\n\nEsto borrará el Courier y número de seguimiento asignado, permitiéndote enviar uno nuevo.')) {
+                                            handleStatusChange(order.id, 'PAID')
+                                        }
+                                     }}
+                                     className="text-[10px] text-red-500 hover:text-red-700 hover:underline font-bold transition-colors"
+                                  >
+                                     ❌ Anular
+                                  </button>
+                                  <button 
+                                     onClick={() => handleStatusChange(order.id, 'ARCHIVED')}
+                                     className="text-[10px] text-slate-700 hover:text-slate-900 bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm"
+                                  >
+                                     📦 Archivar
+                                  </button>
+                                </div>
                              </div>
                           )}
                        </div>

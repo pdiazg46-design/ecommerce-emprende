@@ -27,13 +27,25 @@ export async function GET(req: NextRequest) {
     })
 
     return NextResponse.json(
-      settings || {
+      settings ? {
+        ...settings,
+        bankName: dbUser.bankName || "",
+        accountType: dbUser.accountType || "",
+        accountNumber: dbUser.accountNumber || "",
+        accountHolder: dbUser.accountHolder || "",
+        accountEmail: dbUser.accountEmail || ""
+      } : {
         storeName: "EMPRENDE",
         storeSlogan: "Tu visión, nuestra tecnología",
         storeSlug: null,
         logoUrl: null,
         primaryColor: "#4285F4",
-        shippingCoverage: []
+        shippingCoverage: [],
+        bankName: dbUser.bankName || "",
+        accountType: dbUser.accountType || "",
+        accountNumber: dbUser.accountNumber || "",
+        accountHolder: dbUser.accountHolder || "",
+        accountEmail: dbUser.accountEmail || ""
       }
     )
   } catch (error) {
@@ -51,7 +63,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    const { storeName, storeSlogan, storeSlug, logoUrl, primaryColor, shippingCoverage } = await req.json()
+    const { 
+      storeName, storeSlogan, storeSlug, logoUrl, primaryColor, shippingCoverage,
+      bankName, accountType, accountNumber, accountHolder, accountEmail
+    } = await req.json()
 
     const dbUser = await prisma.user.findUnique({
       where: { email: user.email }
@@ -60,6 +75,18 @@ export async function POST(req: NextRequest) {
     if (!dbUser) {
       return NextResponse.json({ error: 'Usuario principal no encontrado' }, { status: 404 })
     }
+
+    // Actualizar datos bancarios en el perfil de usuario principal
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: {
+        bankName,
+        accountType,
+        accountNumber,
+        accountHolder,
+        accountEmail
+      }
+    })
 
     // Upsert (Crear o Actualizar)
     const settings = await prisma.ecommerceSettings.upsert({

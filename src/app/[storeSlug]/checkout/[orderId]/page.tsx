@@ -106,10 +106,11 @@ export default async function CheckoutPaymentPage(props: {
      )
   }
 
-  const hasPaymentGateway = storeSettings.user.acceptsMercadoPago || storeSettings.user.useSumUp;
+  const hasDigitalGateway = storeSettings.user.acceptsMercadoPago || storeSettings.user.useSumUp;
+  const hasConfiguredPayment = hasDigitalGateway;
   const whatsappNumber = storeSettings.user.phone || '';
   const cleanPhone = whatsappNumber.replace(/\D/g, '');
-  const waRef = `https://wa.me/${cleanPhone}?text=Hola!%20Acabo%20de%20reservar%20el%20pedido%20${order.id.slice(-6).toUpperCase()}%20por%20$${order.totalAmount.toLocaleString('es-CL')}.%20Quería%20coordinar%20el%20pago%20con%20tarjeta.`;
+  const waRef = `https://wa.me/${cleanPhone}?text=Hola!%20Acabo%20de%20reservar%20el%20pedido%20${order.id.slice(-6).toUpperCase()}%20por%20$${order.totalAmount.toLocaleString('es-CL')}.%20Quería%20coordinar%20el%20pago.`;
 
   return (
     <div className="min-h-screen bg-slate-50 py-6 px-4 sm:px-6">
@@ -148,33 +149,38 @@ export default async function CheckoutPaymentPage(props: {
              Realizar Pago Seguro
            </h2>
 
-           {!hasPaymentGateway ? (
+           {!hasConfiguredPayment ? (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-6">
                 <h3 className="text-amber-900 font-bold mb-2 flex items-center gap-2">
                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clipRule="evenodd" /></svg>
                    Tienda en Configuración
                 </h3>
-                <p className="text-amber-800 text-sm mb-4">El vendedor aún no ha activado los enlaces webs automáticos de tarjeta en su cuenta.</p>
+                <p className="text-amber-800 text-sm mb-4">El vendedor aún no ha activado pagos automáticos o cuentas bancarias en su perfil.</p>
                 <a 
                    href={waRef}
                    target="_blank"  
                    className="w-full block text-center bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition"
                 >
-                   Solicitar Link de Pago por WhatsApp
+                   Solicitar Contacto por WhatsApp
                 </a>
               </div>
            ) : (
               <div className="space-y-4">
-                  <p className="text-xs text-slate-600 font-medium mb-4 leading-relaxed">
-                     Selecciona tu medio de pago. Transacción procesada bajo estándares de seguridad externa. No almacenaremos datos de tus tarjetas.
-                  </p>
+                  {hasDigitalGateway && (
+                    <p className="text-xs text-slate-600 font-medium mb-4 leading-relaxed">
+                       Selecciona tu medio de pago. Transacción procesada bajo estándares de seguridad externa. No almacenaremos datos de tus tarjetas.
+                    </p>
+                  )}
 
                   {storeSettings.user.acceptsMercadoPago && (
-                     <MercadoPagoButton orderId={order.id} />
+                     <div className="mb-6">
+                        <p className="text-xs font-bold text-slate-400 mb-3 text-center uppercase tracking-wider">💳 Webpay y Tarjetas</p>
+                        <MercadoPagoButton orderId={order.id} />
+                     </div>
                   )}
 
                   {storeSettings.user.useSumUp && (
-                      <button disabled className="w-full flex items-center justify-between p-3 rounded-xl border-2 border-slate-200 opacity-60 cursor-not-allowed group">
+                      <button disabled className="w-full flex items-center justify-between p-3 rounded-xl border-2 border-slate-200 opacity-60 cursor-not-allowed group mb-6">
                         <div className="flex items-center gap-3">
                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
                               <div className="text-xs font-black text-slate-800 tracking-tighter">sumup.</div>
@@ -186,22 +192,6 @@ export default async function CheckoutPaymentPage(props: {
                         </div>
                      </button>
                   )}
-                  
-                  {/* Botón de Pruebas / Transferencia Manual By-Pass */}
-                  <div className="mt-6 pt-4 border-t border-slate-200">
-                      <p className="text-xs font-bold text-slate-400 mb-3 text-center uppercase tracking-wider">Otras Opciones</p>
-                      
-                      <Link
-                         href={`/${resolvedParams.storeSlug}/checkout/${order.id}?status=approved&payment_id=test_transfer_123`}
-                         className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold transition shadow-sm border border-slate-300 active:scale-[0.98]"
-                      >
-                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 opacity-70"><path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" /></svg>
-                         Aviso de Transferencia Manual (Probar Venta)
-                      </Link>
-                      <p className="text-[10px] text-center text-slate-400 mt-2 px-4">
-                        Este botón permite completar el ciclo de compra sin tarjeta de crédito. Usar para confirmar el rebaje de stock automático en el módulo de ventas.
-                      </p>
-                  </div>
               </div>
            )}
         </div>
