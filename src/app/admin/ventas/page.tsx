@@ -99,11 +99,12 @@ export default function AdminVentas() {
 
   const filteredOrders = orders.filter(o => {
     if (filterStatus === 'ALL') return o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT' && o.status !== 'ARCHIVED'
+    if (filterStatus === 'PENDING') return o.status === 'PENDING' || o.status === 'PENDING_PAYMENT'
     return o.status === filterStatus
   })
 
   const stats = { 
-    total: orders.filter(o => o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT' && o.status !== 'ARCHIVED').length, 
+    total: orders.filter(o => o.status !== 'PENDING' && o.status !== 'PENDING_PAYMENT').length, 
     pending: orders.filter(o => o.status === 'PENDING' || o.status === 'PENDING_PAYMENT').length,
     paid: orders.filter(o => o.status === 'PAID').length,
     sent: orders.filter(o => o.status === 'SENT').length,
