@@ -19,6 +19,17 @@ export async function GET() {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
     }
 
+    // 🧹 Limpieza Fantasma Automática (Ghost Scrubbing):
+    // Destruye silenciosamente los carritos abandonados de más de 24 horas cada vez que visitas el panel.
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    await prisma.ecommerceOrder.deleteMany({
+      where: {
+        storeId: dbUser.id,
+        status: { in: ['PENDING', 'PENDING_PAYMENT'] },
+        createdAt: { lt: twentyFourHoursAgo }
+      }
+    })
+
     // Traer todos los pedidos de la base de datos de este vendedor
     const orders = await prisma.ecommerceOrder.findMany({
       where: {
